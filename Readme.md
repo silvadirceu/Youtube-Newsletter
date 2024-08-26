@@ -20,7 +20,9 @@ e alguma LLM para criar os resumos.
 
 3. Certifique-se de ter o Ollama rodando na sua máquina.
 4. Instale o [ffmpeg](https://www.ffmpeg.org/).
+
 5. Crie uma chave de acesso da [Youtube Data API](https://console.cloud.google.com/marketplace/product/google/youtube.googleapis.com?q=search&referrer=search&hl=pt-br&project=scidata-299417). [Vídeo Explicando com oobter a chava](https://www.youtube.com/watch?v=OrtVbZ2fAd4)
+
 6. Crie uma chave de Acesso na GroqAI ou na OpenAI. Estas chaves serão usadas no passo 3 para resumir os vídeos, onde um Agent foi criado usando LangFlow. Caso queira editá-lo, instale a `langflow`, carregue o arquivo `Youtube Resumer.json` e edite-o. Lembre-se de alterar o arquivo 3.resume_video para contemplar suas mudanças.
 7. Adicione as chaves geradas nos passos 5 e 6 em um arquivo chamado ".env", que deve ficar no mesmo diretório dos demais. 
 
