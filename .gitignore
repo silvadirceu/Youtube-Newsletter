@@ -116,3 +116,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+audios
+resumes
+youtube_db.json
