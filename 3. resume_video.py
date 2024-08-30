@@ -14,7 +14,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-final_path = ""
 load_dotenv()
 
 groq_api_key = os.getenv("GROQ_API_KEY")
@@ -105,8 +104,9 @@ if __name__ == "__main__":
 
             post_date = c_table.search(Query().title==video)[0]["publishedAt"]
             post_date = post_date.split("T")[0]
-
-            with open(f"{final_path}{post_date}.md", "a") as news_md:
+            base_dir = f"resumes/{channel}"
+            os.makedirs(base_dir, exist_ok=True)
+            with open(f"{base_dir}/{post_date}.md", "a") as news_md:
                 result = resume_video(video_transcription, video, channel)
                 t_table.update({"resume": result},
                         Query().title == video)

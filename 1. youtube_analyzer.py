@@ -117,7 +117,7 @@ def main(youtube, channel_name):
 
     video_ids = get_channel_videos(youtube, channel_id, cutoff_date)
     if video_ids:
-        videos =  (youtube, video_ids)
+        videos =  get_video_details(youtube, video_ids)
         for video in videos:
             video["viewCount"] = 0 if video["viewCount"] is None else int(video["viewCount"])
             video["likeCount"] = 0 if video["likeCount"] is None else int(video["likeCount"])
