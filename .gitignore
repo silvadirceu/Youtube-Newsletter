@@ -1,0 +1,6 @@
+# Ignorar todos os arquivos e pastas __pycache__
+**/__pycache__/
+
+# Ignorar todos os arquivos .DS_Store
+**/.DS_Store
+

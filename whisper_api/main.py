@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from innocore.api.api_v1.api import api_router
-from innocore.service.config import settings
+from whisper_api.api.api_v1.api import api_router
+from whisper_api.service.config import settings
 
 middleware = [
     Middleware(
