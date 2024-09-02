@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-
+from typing import Dict
 from pydantic import BaseModel
 
 
@@ -28,7 +28,7 @@ class AudioInDBBase(AudioBase):
 
 # Additional properties to return via API
 class Audio(AudioInDBBase):
-    pass
+    transcription: Dict[str, str]
 
 
 class AudioInfo(Audio):
