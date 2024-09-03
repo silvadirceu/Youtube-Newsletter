@@ -1,5 +1,5 @@
 from fastapi import UploadFile, File
-from typing import Dict
+from typing import Dict, List
 from pydantic import BaseModel
 
 
@@ -26,9 +26,16 @@ class AudioInDBBase(AudioBase):
     class Config:
         pass
 
-# Additional properties to return via API
-class Audio(AudioInDBBase):
-    transcription: Dict[str, str]
+class TranscriptionSegment(BaseModel):
+    start: float
+    end: float
+    text: str
+
+# Schema principal que inclui a transcrição completa e os segmentos com timestamps
+class Audio(BaseModel):
+    transcription_with_timestamps: List[TranscriptionSegment]
+    full_transcription: str
+
 
 
 class AudioInfo(Audio):

@@ -10,7 +10,7 @@ class BusinessAudio():
     def __init__(self, model):
         self.whisper_model = model
 
-    async def transcribe(self, obj_in: UploadFile) -> Any:
+    async def transcribe(self, obj_in: UploadFile) -> schemas.Audio:
         """
         Returns all objects.
         """
@@ -64,9 +64,11 @@ class BusinessAudio():
 
         full_transcription = full_transcription.strip()
 
-        print(transcription_with_timestamps)
-        print(full_transcription) 
-        return segments
+        return schemas.Audio(
+                transcription_with_timestamps=transcription_with_timestamps,
+                full_transcription=full_transcription
+            )
+
     
 
 model = WhisperModel("small", 

@@ -8,10 +8,10 @@ from whisper_api import schemas, business
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("/", response_model=schemas.Audio)
 async def transcribe(
     obj_in: UploadFile,
-) -> Any:
+) -> schemas.Audio:
     """
     Transcribe an audio file to a dict. 
     The dict contains the following structure:
