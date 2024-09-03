@@ -2,3 +2,5 @@ fastapi
 faster-whisper
 ffmpeg-python
 pydantic
+uvicorn
+sqlalchemy

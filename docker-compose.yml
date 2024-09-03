@@ -1,0 +1,15 @@
+version: '3.8'
+    
+networks:
+  youtube-newsletter-network:
+    driver: bridge
+
+services:
+  whisper-api:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - '8000:80'
+    networks:
+      - youtube-newsletter-network
