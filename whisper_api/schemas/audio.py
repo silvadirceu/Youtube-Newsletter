@@ -1,11 +1,11 @@
-from fastapi import UploadFile
+from fastapi import UploadFile, File
 from typing import Dict
 from pydantic import BaseModel
 
 
 # Shared properties
 class AudioBase(BaseModel):
-    file: UploadFile
+    file: UploadFile = File(...)
 
 
 # Properties to receive via API on creation
