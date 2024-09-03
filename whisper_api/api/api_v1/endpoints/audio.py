@@ -1,5 +1,4 @@
-from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
+from fastapi import APIRouter, UploadFile
 from whisper_api import schemas, business
 
 router = APIRouter()

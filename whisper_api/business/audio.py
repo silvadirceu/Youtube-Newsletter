@@ -1,5 +1,4 @@
-from typing import List, Any
-from fastapi import HTTPException, status, UploadFile
+from fastapi import UploadFile
 from faster_whisper import WhisperModel
 import ffmpeg
 import os
@@ -19,7 +18,7 @@ class BusinessAudio():
             f.write(contents)
         audio_file = open(obj_in.filename, "rb")
 
-        segments, transcription_info = self.whisper_model.transcribe(audio_file,
+        segments, _ = self.whisper_model.transcribe(audio_file,
                                                                     word_timestamps=True, 
                                                                     language="pt")
         
