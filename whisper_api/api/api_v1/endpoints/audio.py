@@ -11,7 +11,6 @@ async def transcribe(
 ) -> schemas.Audio:
     """
     Transcribe an audio file to a dict. 
-    The dict contains the following structure:
     
     """
     return await business.audio.transcribe(obj_in)
