@@ -3,4 +3,5 @@ faster-whisper
 ffmpeg-python
 pydantic
 uvicorn
-sqlalchemy
+python-multipart
+pydantic-settings

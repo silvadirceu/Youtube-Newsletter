@@ -1,6 +1,3 @@
-from typing import Any, Dict, List, Optional
-
-from pydantic import EmailStr, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
