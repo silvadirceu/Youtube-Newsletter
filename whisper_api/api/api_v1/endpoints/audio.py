@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile
 from whisper_api import schemas, business
+from typing import Any
 
 router = APIRouter()
 
@@ -13,3 +14,14 @@ async def transcribe(
     
     """
     return await business.audio.transcribe(obj_in)
+
+
+# @router.post("/faster")
+# async def transcribe_faster(
+#     obj_in: UploadFile,
+# ) -> Any:
+#     """
+#     Transcribe an audio file to a dict. 
+    
+#     """
+#     return await business.audio.transcribe_faster(obj_in)
