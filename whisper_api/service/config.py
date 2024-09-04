@@ -1,4 +1,8 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -15,7 +19,7 @@ class Settings(BaseSettings):
     ROOT_PATH: str = ""
     
     # CHATGPT API
-    CHATGPT_API_KEY: str = ""
+    OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
     CHATGPT_MODEL: str = "gpt-3.5-turbo-1106"
     CHATGPT_TEMPERATURE: float = .2
 
