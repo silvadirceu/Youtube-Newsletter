@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     )
 
     # Project and API version
-    PROJECT_NAME: str = "Whisper API"
-    PROJECT_DESCRIPTION: str = "API to transcribe audio to text using Whisper Model"
+    PROJECT_NAME: str = "Youtube Manager API"
+    PROJECT_DESCRIPTION: str = "This API is designed to manage YouTube access operations, such as retrieving channel and video data, as well as downloading audio from videos."
     API_PROXY_STR: str = ""
     ROOT_PATH: str = ""
     

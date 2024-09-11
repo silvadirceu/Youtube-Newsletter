@@ -4,7 +4,7 @@ import ffmpeg
 from youtube_manager import schemas
 from typing import Any
 from googleapiclient.discovery import build
-from service.config import settings
+import youtube_manager.service as service
 
 class BusinessYoutubeManager():
     def __init__(self, youtube) -> None:
@@ -28,6 +28,6 @@ class BusinessYoutubeManager():
         return None
 
 
-youtube = build('youtube', 'v3', developerKey=settings.YOUTUBE_API_KEY)
+youtube = build('youtube', 'v3', developerKey=service.settings.YOUTUBE_API_KEY)
 
-manager = BusinessYoutubeManager()
+youtube_manager = BusinessYoutubeManager(youtube)

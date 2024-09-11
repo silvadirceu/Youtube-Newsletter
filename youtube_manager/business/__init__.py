@@ -1,1 +1,1 @@
-from .youtube_manager import manager
+from .youtube_manager import youtube_manager
