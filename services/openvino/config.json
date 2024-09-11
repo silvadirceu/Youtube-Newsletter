@@ -1,0 +1,12 @@
+{
+    "model_config_list":[
+       {
+          "config":{
+             "name":"distil-whisper",
+             "base_path":"/models/distil-whisper",
+             "batch_size": "auto",
+             "shape": "auto"
+          }
+       }
+    ]
+ }
