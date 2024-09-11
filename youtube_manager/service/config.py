@@ -19,9 +19,12 @@ class Settings(BaseSettings):
     ROOT_PATH: str = ""
     
     # CHATGPT API
-    OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
+    # OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
     CHATGPT_MODEL: str = "gpt-3.5-turbo-1106"
     CHATGPT_TEMPERATURE: float = .2
+
+    # YOUTUBE API
+    YOUTUBE_API_KEY: str = os.getenv('YOUTUBE_API_KEY')
 
 
 settings = Settings()

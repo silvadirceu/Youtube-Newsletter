@@ -10,7 +10,7 @@ def search_channel(name: str):
     """
     Searches a channel by name and returns a channel_id.
     """
-    return business.audio.transcribe(obj_in)
+    return business.youtube_manager.search(name)
 
 
 # @router.post("/faster")
