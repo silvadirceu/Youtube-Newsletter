@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from whisper_api.api.api_v1.endpoints import audio
+from youtube_manager.api.api_v1.endpoints import analyzer
 
 api_router = APIRouter()
-api_router.include_router(audio.router, prefix="/audio", tags=["Audio"])
+api_router.include_router(analyzer.router, prefix="/analyzer", tags=["Analyzer"])
 

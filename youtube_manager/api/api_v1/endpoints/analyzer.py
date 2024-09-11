@@ -1,19 +1,16 @@
 from fastapi import APIRouter, UploadFile
-from whisper_api import schemas, business
+from youtube_manager import schemas, business
 from typing import Any
 
 router = APIRouter()
 
-
-@router.post("/", response_model=schemas.Audio)
-async def transcribe(
-    obj_in: UploadFile,
-) -> schemas.Audio:
+ 
+@router.get("/channels/search", response_model=schemas.Audio)
+def search_channel(name: str):
     """
-    Transcribe an audio file to a dict. 
-    
+    Searches a channel by name and returns a channel_id.
     """
-    return await business.audio.transcribe(obj_in)
+    return business.audio.transcribe(obj_in)
 
 
 # @router.post("/faster")
