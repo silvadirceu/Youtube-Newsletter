@@ -9,4 +9,4 @@ EXPOSE 8201
 
 CMD ["--config_path", "/opt/ml/config.json", "--port", "8001", "--rest_port", "8002"]
 
-# docker run --rm -v /home/luiz/repositories/Youtube-Newsletter/services/openvino/models:/models -v /home/luiz/repositories/Youtube-Newsletter/services/openvino/config.json:/opt/ml/config.json -p 8201:8001 ovserver
+# docker run --rm -v /home/luiz/repositories/Youtube-Newsletter/services/openvino/models:/models -v /home/luiz/repositories/Youtube-Newsletter/services/openvino/config.json:/opt/ml/config.json -p 8301:8001 ovserver
