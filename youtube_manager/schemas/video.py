@@ -1,11 +1,19 @@
-from fastapi import UploadFile, File
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 # Shared properties
 class VideoBase(BaseModel):
-    id: Optional[str] = None
+    id: str
+    title: str
+    description: Optional[str]
+    publishedAt: str
+    thumbnail: HttpUrl
+    duration: str
+    viewCount: Optional[int]
+    likeCount: Optional[int]
+    commentCount: Optional[int]
+    url: HttpUrl
 
 
 # Properties to receive via API on creation
