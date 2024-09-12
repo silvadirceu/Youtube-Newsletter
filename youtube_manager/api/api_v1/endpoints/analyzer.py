@@ -5,7 +5,7 @@ from typing import Any
 router = APIRouter()
 
  
-@router.get("/channels/search", response_model=schemas.Audio)
+@router.get("/channels/search", response_model=schemas.Channel)
 def search_channel(name: str):
     """
     Searches a channel by name and returns a channel_id.

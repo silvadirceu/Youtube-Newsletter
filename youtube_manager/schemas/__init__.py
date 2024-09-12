@@ -1,1 +1,1 @@
-from .audio import AudioBase, Audio
+from .channel import ChannelBase, Channel

@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 import youtube_manager.service as service
 
 class BusinessYoutubeManager():
-    def __init__(self, youtube) -> None:
+    def __init__(self, youtube):
         self.youtube = youtube
 
     def search(self, name: str) -> Any:
@@ -21,10 +21,8 @@ class BusinessYoutubeManager():
             maxResults=1
         )
         response = request.execute()
-        print("response: ", response)
         if response.get('items'):
-            print("\n\n\n", response['items'][0]['snippet']['channelId'], "\n\n\n")
-            return response['items'][0]['snippet']['channelId']
+            return schemas.Channel(id=response['items'][0]['snippet']['channelId'])
         return None
 
 
