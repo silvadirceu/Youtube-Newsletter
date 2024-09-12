@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 import youtube_manager.service as service
 from dateutil import parser
 import re
+import pandas as pd
 
 class BusinessYoutubeManager():
     def __init__(self, youtube):
@@ -31,31 +32,41 @@ class BusinessYoutubeManager():
         """
         Returns a video_id list from a channel.
         """
-        cutoff = parser.isoparse(cutoff_date)
+        cutoff = pd.to_datetime(cutoff_date)
         video_ids = []
         next_page_token = None
 
         while True:
-            request = self.youtube.search().list(
-                part="snippet",
-                channelId=channel_id,
+            request = self.youtube.channels().list(
+                part="contentDetails",
+                id=channel_id,
                 maxResults=50,
-                order="date",
-                type="video",
                 pageToken=next_page_token
             )
             response = request.execute()
-            videos = response.get('items', [])
-            if cutoff:
-                videos = [video for video in videos if parser.isoparse(video['snippet']['publishedAt']) > cutoff]
+            uploads_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+
+            videos_request = self.youtube.playlistItems().list(
+                part="snippet",
+                playlistId=uploads_id,
+                maxResults=5,
+                pageToken=next_page_token
+            )
+            videos = videos_request.execute()
             
-            video_ids.extend(schemas.VideoBase(id=item['id']['videoId']) for item in videos)
+            items = videos.get('items', [])
+            if cutoff:
+                items = [video for video in items if pd.to_datetime(video['snippet']['publishedAt']) > cutoff]
+            
+            video_ids.extend(schemas.Video(id=item['snippet']['resourceId']['videoId']) for item in items)
 
             # Verifica se há mais páginas
-            next_page_token = response.get('nextPageToken')
-            if not next_page_token or len(videos) == 0:
+            next_page_token = videos.get('nextPageToken')
+            if not next_page_token or len(items) == 0:
                 break
+
         return video_ids
+
     
     def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
         videos = []
