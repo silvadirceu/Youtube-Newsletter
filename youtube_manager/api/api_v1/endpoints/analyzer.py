@@ -13,6 +13,13 @@ def search_channel(name: str):
     return business.youtube_manager.search(name)
 
 
+@router.get("/channels/{channel_id}/videos", response_model=schemas.Video)
+def channel_videos(channel_id: str, cutoff_date: str):
+    """
+    Returns a video_id list from a channel.
+    """
+    return business.youtube_manager.get_channel_videos(channel_id, cutoff_date)
+
 # @router.post("/faster")
 # async def transcribe_faster(
 #     obj_in: UploadFile,
