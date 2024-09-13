@@ -85,6 +85,7 @@ class BusinessYoutubeManager():
                     description=item['snippet'].get('description'),
                     publishedAt=item['snippet']['publishedAt'],
                     thumbnail=item['snippet']['thumbnails']['default']['url'],
+                    channelTitle=item['snippet']['channelTitle'],
                     duration=item['contentDetails']['duration'],
                     viewCount=item['statistics'].get('viewCount'),
                     likeCount=item['statistics'].get('likeCount'),
@@ -96,7 +97,7 @@ class BusinessYoutubeManager():
     
     def download_audio(self, videos: List[schemas.VideoBase]) -> str:
         for video in videos:
-            base_dir = f"audios/{video.id}"
+            base_dir = f"audios/{video.channelTitle}"
             os.makedirs(base_dir, exist_ok=True)
 
             # Verifica se o áudio já foi baixado

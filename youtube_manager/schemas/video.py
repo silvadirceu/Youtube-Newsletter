@@ -9,6 +9,7 @@ class VideoBase(BaseModel):
     description: Optional[str]
     publishedAt: str
     thumbnail: HttpUrl
+    channelTitle: str
     duration: str
     viewCount: Optional[int]
     likeCount: Optional[int]
