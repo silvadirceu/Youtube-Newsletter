@@ -135,11 +135,9 @@ class BusinessYoutubeManager():
         try:
             for video in videos:
                 base_dir = f"audios/{video.channelTitle}"
-                os.makedirs(base_dir, exist_ok=True)
-
                 actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
                 if video.title not in actual_audios:
-                    print(f"Downloading {video.title} from {video.url}.")
+                    os.makedirs(base_dir, exist_ok=True)
                     yt = YouTube(str(video.url))
 
                     stream_url = yt.streams[0].url
