@@ -1,13 +1,12 @@
-from fastapi import UploadFile
-from faster_whisper import WhisperModel
 import ffmpeg
 from youtube_manager import schemas
 from typing import Any, List
 from googleapiclient.discovery import build
 import youtube_manager.service as service
-from dateutil import parser
 import re
 import pandas as pd
+import os
+from pytubefix import YouTube
 
 class BusinessYoutubeManager():
     def __init__(self, youtube):
@@ -79,6 +78,7 @@ class BusinessYoutubeManager():
             response = request.execute()
 
             for item in response.get('items', []):
+                print("\n\n\n", item, "\n\n\n")
                 video_data = schemas.VideoBase(
                     id=item['id'],
                     title=re.sub(r'[^\w\s]', '', item['snippet']['title']).strip(),
@@ -93,6 +93,35 @@ class BusinessYoutubeManager():
                 )
                 videos.append(video_data)  # Converte para dict se precisar em outro formato
         return videos
+    
+    def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+        for video in videos:
+            base_dir = f"audios/{video.id}"
+            os.makedirs(base_dir, exist_ok=True)
+
+            # Verifica se o áudio já foi baixado
+            actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
+            if video.title not in actual_audios:
+                print(f"Downloading {video.title} from {video.url}.")
+                yt = YouTube(str(video.url))
+
+                stream_url = yt.streams[0].url
+                audio, err = (
+                    ffmpeg
+                    .input(stream_url)
+                    .output("pipe:", format='wav', 
+                            acodec='pcm_s16le', 
+                            loglevel="error")  
+                    .run(capture_stdout=True)
+                )
+
+                # Salva o áudio em formato .wav
+                with open(f'{base_dir}/{video.title}.wav', 'wb') as f:
+                    f.write(audio)
+
+        return "Audios downloaded!"
+
+
 
 youtube = build('youtube', 'v3', developerKey=service.settings.YOUTUBE_API_KEY)
 

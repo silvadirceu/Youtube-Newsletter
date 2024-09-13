@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter
 from youtube_manager import schemas, business
 from typing import Any, List
 
@@ -28,12 +28,3 @@ def video_details(video_ids: List[schemas.Video]):
     """
     return business.youtube_manager.get_video_details(video_ids)
 
-# @router.post("/faster")
-# async def transcribe_faster(
-#     obj_in: UploadFile,
-# ) -> Any:
-#     """
-#     Transcribe an audio file to a dict. 
-    
-#     """
-#     return await business.audio.transcribe_faster(obj_in)
