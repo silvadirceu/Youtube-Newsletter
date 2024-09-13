@@ -90,32 +90,43 @@ class BusinessYoutubeManager():
 
     
     def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
-        videos = []
-        for i in range(0, len(video_ids), 50): 
-            video_id_slice = [video.id for video in video_ids[i:i+50] if video.id]
-            request = youtube.videos().list(
-                part="snippet,contentDetails,statistics",
-                id=",".join(video_id_slice) 
-            )
-            response = request.execute()
+        if not video_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video IDs provided.")
 
-            for item in response.get('items', []):
-                print("\n\n\n", item, "\n\n\n")
-                video_data = schemas.VideoBase(
-                    id=item['id'],
-                    title=re.sub(r'[^\w\s]', '', item['snippet']['title']).strip(),
-                    description=item['snippet'].get('description'),
-                    publishedAt=item['snippet']['publishedAt'],
-                    thumbnail=item['snippet']['thumbnails']['default']['url'],
-                    channelTitle=item['snippet']['channelTitle'],
-                    duration=item['contentDetails']['duration'],
-                    viewCount=item['statistics'].get('viewCount'),
-                    likeCount=item['statistics'].get('likeCount'),
-                    commentCount=item['statistics'].get('commentCount'),
-                    url=f"https://www.youtube.com/watch?v={item['id']}"
+        try:
+            videos = []
+            for i in range(0, len(video_ids), 50): 
+                video_id_slice = [video.id for video in video_ids[i:i+50] if video.id]
+                request = self.youtube.videos().list(
+                    part="snippet,contentDetails,statistics",
+                    id=",".join(video_id_slice) 
                 )
-                videos.append(video_data)  # Converte para dict se precisar em outro formato
-        return videos
+                response = request.execute()
+
+                for item in response.get('items', []):
+                    video_data = schemas.VideoBase(
+                        id=item['id'],
+                        title=re.sub(r'[^\w\s]', '', item['snippet']['title']).strip(),
+                        description=item['snippet'].get('description'),
+                        publishedAt=item['snippet']['publishedAt'],
+                        thumbnail=item['snippet']['thumbnails']['default']['url'],
+                        channelTitle=item['snippet']['channelTitle'],
+                        duration=item['contentDetails']['duration'],
+                        viewCount=item['statistics'].get('viewCount'),
+                        likeCount=item['statistics'].get('likeCount'),
+                        commentCount=item['statistics'].get('commentCount'),
+                        url=f"https://www.youtube.com/watch?v={item['id']}"
+                    )
+                    videos.append(video_data)
+                    
+            if not videos:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No video details found.")
+            
+            return videos
+
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
     
     def download_audio(self, videos: List[schemas.VideoBase]) -> str:
         for video in videos:
