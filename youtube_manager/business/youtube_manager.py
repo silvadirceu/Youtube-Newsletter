@@ -129,31 +129,39 @@ class BusinessYoutubeManager():
 
     
     def download_audio(self, videos: List[schemas.VideoBase]) -> str:
-        for video in videos:
-            base_dir = f"audios/{video.channelTitle}"
-            os.makedirs(base_dir, exist_ok=True)
+        if not videos:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
+        
+        try:
+            for video in videos:
+                base_dir = f"audios/{video.channelTitle}"
+                os.makedirs(base_dir, exist_ok=True)
 
-            # Verifica se o áudio já foi baixado
-            actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
-            if video.title not in actual_audios:
-                print(f"Downloading {video.title} from {video.url}.")
-                yt = YouTube(str(video.url))
+                actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
+                if video.title not in actual_audios:
+                    print(f"Downloading {video.title} from {video.url}.")
+                    yt = YouTube(str(video.url))
 
-                stream_url = yt.streams[0].url
-                audio, err = (
-                    ffmpeg
-                    .input(stream_url)
-                    .output("pipe:", format='wav', 
-                            acodec='pcm_s16le', 
-                            loglevel="error")  
-                    .run(capture_stdout=True)
-                )
+                    stream_url = yt.streams[0].url
+                    audio, err = (
+                        ffmpeg
+                        .input(stream_url)
+                        .output("pipe:", format='wav', 
+                                acodec='pcm_s16le', 
+                                loglevel="error")  
+                        .run(capture_stdout=True)
+                    )
 
-                # Salva o áudio em formato .wav
-                with open(f'{base_dir}/{video.title}.wav', 'wb') as f:
-                    f.write(audio)
+                    with open(f'{base_dir}/{video.title}.wav', 'wb') as f:
+                        f.write(audio)
 
-        return "Audios downloaded!"
+            return "Audios downloaded!"
+
+        except FileNotFoundError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
 
 
