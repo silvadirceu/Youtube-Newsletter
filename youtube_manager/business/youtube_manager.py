@@ -39,40 +39,54 @@ class BusinessYoutubeManager():
         """
         Returns a video_id list from a channel.
         """
-        cutoff = pd.to_datetime(cutoff_date)
+        try:
+            cutoff = pd.to_datetime(cutoff_date)
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cutoff date format.")
+
         video_ids = []
         next_page_token = None
 
-        while True:
-            request = self.youtube.channels().list(
-                part="contentDetails",
-                id=channel_id,
-                maxResults=50,
-                pageToken=next_page_token
-            )
-            response = request.execute()
-            uploads_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+        try:
+            while True:
+                request = self.youtube.channels().list(
+                    part="contentDetails",
+                    id=channel_id,
+                    maxResults=50,
+                    pageToken=next_page_token
+                )
+                response = request.execute()
 
-            videos_request = self.youtube.playlistItems().list(
-                part="snippet",
-                playlistId=uploads_id,
-                maxResults=5,
-                pageToken=next_page_token
-            )
-            videos = videos_request.execute()
+                if not response.get('items'):
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found.")
+
+                uploads_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+
+                videos_request = self.youtube.playlistItems().list(
+                    part="snippet",
+                    playlistId=uploads_id,
+                    maxResults=5,
+                    pageToken=next_page_token
+                )
+                videos = videos_request.execute()
+                
+                items = videos.get('items', [])
+                if cutoff:
+                    items = [video for video in items if pd.to_datetime(video['snippet']['publishedAt']) > cutoff]
+                
+                video_ids.extend(schemas.Video(id=item['snippet']['resourceId']['videoId']) for item in items)
+
+                next_page_token = videos.get('nextPageToken')
+                if not next_page_token or len(items) == 0:
+                    break
+
+            if not video_ids:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No videos found.")
             
-            items = videos.get('items', [])
-            if cutoff:
-                items = [video for video in items if pd.to_datetime(video['snippet']['publishedAt']) > cutoff]
-            
-            video_ids.extend(schemas.Video(id=item['snippet']['resourceId']['videoId']) for item in items)
-
-            # Verifica se há mais páginas
-            next_page_token = videos.get('nextPageToken')
-            if not next_page_token or len(items) == 0:
-                break
-
-        return video_ids
+            return video_ids
+        
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     
     def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
