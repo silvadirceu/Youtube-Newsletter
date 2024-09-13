@@ -1,12 +1,13 @@
 import ffmpeg
 from youtube_manager import schemas
-from typing import Any, List
+from typing import List
 from googleapiclient.discovery import build
 import youtube_manager.service as service
 import re
 import pandas as pd
 import os
 from pytubefix import YouTube
+from fastapi import HTTPException, status
 
 class BusinessYoutubeManager():
     def __init__(self, youtube):
@@ -16,16 +17,23 @@ class BusinessYoutubeManager():
         """
         Searches a channel by name and returns a channel_id.
         """
-        request = self.youtube.search().list(
-            part="snippet",
-            q=name,
-            type="channel",
-            maxResults=1
-        )
-        response = request.execute()
-        if response.get('items'):
+        try:
+            request = self.youtube.search().list(
+                part="snippet",
+                q=name,
+                type="channel",
+                maxResults=1
+            )
+            response = request.execute()
+
+            if not response.get('items'):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found.")
+            
             return schemas.Channel(id=response['items'][0]['snippet']['channelId'])
-        return None
+        
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
     def get_channel_videos(self, channel_id: str, cutoff_date: str) -> List[schemas.Video]:
         """
