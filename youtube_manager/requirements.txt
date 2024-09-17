@@ -1,0 +1,10 @@
+fastapi
+ffmpeg-python
+pydantic
+uvicorn
+python-multipart
+pydantic-settings
+google_api_python_client
+pandas
+pytubefix
+aiofiles
