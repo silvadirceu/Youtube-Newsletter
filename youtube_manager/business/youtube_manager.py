@@ -8,6 +8,8 @@ import pandas as pd
 import os
 from pytubefix import YouTube
 from fastapi import HTTPException, status
+import asyncio
+import aiofiles
 
 class BusinessYoutubeManager():
     def __init__(self, youtube):
@@ -143,32 +145,71 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     
-    def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+    async def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+        if not videos:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
+
+        try:
+            for video in videos:
+                base_dir = f"audios/{video.channelTitle}"
+                
+                # Criar diretório de forma assíncrona se ainda não existir
+                os.makedirs(base_dir, exist_ok=True)
+                
+                actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
+                
+                if video.title not in actual_audios:
+                    # Executar criação do objeto YouTube em uma thread separada
+                    yt = await asyncio.to_thread(YouTube, str(video.url))
+                    
+                    # Obter a URL da stream de áudio
+                    stream_url = yt.streams[0].url
+                    
+                    # Processar o áudio com ffmpeg de forma assíncrona
+                    audio, err = await asyncio.to_thread(
+                        lambda: ffmpeg
+                        .input(stream_url)
+                        .output("pipe:", format='wav', acodec='pcm_s16le', loglevel="error")
+                        .run(capture_stdout=True)
+                    )
+                    
+                    # Escrever o áudio baixado no arquivo de forma assíncrona
+                    async with aiofiles.open(f'{base_dir}/{video.title}.wav', 'wb') as f:
+                        await f.write(audio)
+            
+            return "Audios downloaded!"
+        
+        except FileNotFoundError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+
+    async def download_video(self, videos: List[schemas.VideoBase]) -> str:
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
         
         try:
             for video in videos:
-                base_dir = f"audios/{video.channelTitle}"
+                base_dir = f"videos/{video.channelTitle}"
                 os.makedirs(base_dir, exist_ok=True)
-                actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
-                if video.title not in actual_audios:     
-                    yt = YouTube(str(video.url))
 
-                    stream_url = yt.streams[0].url
-                    audio, err = (
-                        ffmpeg
-                        .input(stream_url)
-                        .output("pipe:", format='wav', 
-                                acodec='pcm_s16le', 
-                                loglevel="error")  
-                        .run(capture_stdout=True)
-                    )
+                # Verificar se o vídeo já foi baixado
+                actual_videos = [i.split(".mp4")[0] for i in os.listdir(base_dir)]
+                if video.title not in actual_videos:     
+                    yt = await asyncio.to_thread(YouTube, str(video.url))
 
-                    with open(f'{base_dir}/{video.title}.wav', 'wb') as f:
-                        f.write(audio)
+                    # Buscar a melhor stream de vídeo (pode incluir áudio junto)
+                    stream = yt.streams.filter(progressive=True, file_extension='mp4').first()
+                    
+                    if not stream:
+                        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No suitable video stream found.")
 
-            return "Audios downloaded!"
+                    # Download do vídeo de forma assíncrona
+                    await asyncio.to_thread(stream.download, output_path=base_dir, filename=f"{video.title}.mp4")
+
+            return "Videos downloaded!"
 
         except FileNotFoundError as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")

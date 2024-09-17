@@ -7,3 +7,4 @@ pydantic-settings
 google_api_python_client
 pandas
 pytubefix
+aiofiles
