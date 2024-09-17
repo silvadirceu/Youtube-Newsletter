@@ -14,11 +14,11 @@ def search_channel(name: str):
 
 
 @router.get("/channels/{channel_id}/videos", response_model=List[schemas.Video])
-def channel_videos(channel_id: str, cutoff_date: str):
+def channel_videos(channel_id: str, start_date: str, end_date: str = None):
     """
-    Returns a video_id list from a channel.
+    Returns a video list from a channel within a specified date range.
     """
-    return business.youtube_manager.get_channel_videos(channel_id, cutoff_date)
+    return business.youtube_manager.get_channel_videos(channel_id, start_date, end_date)
 
 
 @router.post("/videos", response_model=List[schemas.VideoBase])

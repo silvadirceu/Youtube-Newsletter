@@ -35,14 +35,25 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-    def get_channel_videos(self, channel_id: str, cutoff_date: str) -> List[schemas.Video]:
+    def get_channel_videos(self, channel_id: str, start_date: str, end_date: str = None) -> List[schemas.Video]:
         """
-        Returns a video_id list from a channel.
+        Returns a video list from a channel within a specified date range.
         """
         try:
-            cutoff = pd.to_datetime(cutoff_date)
+            start_date = pd.to_datetime(start_date).tz_localize(None)
         except ValueError:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cutoff date format.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid start date format.")
+        
+        if end_date:
+            try:
+                end_date = pd.to_datetime(end_date).tz_localize(None)
+            except ValueError:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid end date format.")
+        else:
+            end_date = pd.Timestamp.now().tz_localize(None)
+
+        if start_date > end_date:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Start date must be before end date.")
 
         video_ids = []
         next_page_token = None
@@ -71,8 +82,11 @@ class BusinessYoutubeManager():
                 videos = videos_request.execute()
                 
                 items = videos.get('items', [])
-                if cutoff:
-                    items = [video for video in items if pd.to_datetime(video['snippet']['publishedAt']) > cutoff]
+                
+                items = [
+                    video for video in items 
+                    if start_date <= pd.to_datetime(video['snippet']['publishedAt']).tz_localize(None) <= end_date
+                ]
                 
                 video_ids.extend(schemas.Video(id=item['snippet']['resourceId']['videoId']) for item in items)
 
@@ -81,12 +95,13 @@ class BusinessYoutubeManager():
                     break
 
             if not video_ids:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No videos found.")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No videos found in the specified date range.")
             
             return video_ids
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
     
     def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
