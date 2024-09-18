@@ -4,6 +4,10 @@
 
 **/.env
 
+**/audios
+
+**/videos
+
 services/openvino/models/distil-whisper
 
 script/distil-whisper_distil-small.en/
