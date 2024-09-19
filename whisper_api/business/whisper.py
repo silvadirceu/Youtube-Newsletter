@@ -4,11 +4,33 @@ import ffmpeg
 import os
 from whisper_api import schemas
 from typing import Any
+from pathlib import Path
+from optimum.intel.openvino import OVModelForSpeechSeq2Seq
+from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq
+from whisper_api.service.config import settings
 
+class BusinessWhisper():
+    def __init__(self, model_id):
+        self.model_id = model_id
+        self.model_path = Path(model_id.replace("/", "_"))
+        self.ov_config = {"CACHE_DIR": ""}
+        self.processor = AutoProcessor.from_pretrained(model_id.value)
+        self.pt_model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id.value)
+        self.ov_model = None
+        self.pt_model.eval();
 
-class BusinessAudio():
-    def __init__(self, model):
-        self.whisper_model = model
+        if not self.model_path.exists():
+            self.ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
+                self.model_id,
+                ov_config=self.ov_config,
+                export=True,
+                compile=False,
+                load_in_8bit=False,
+            )
+            self.ov_model.half()
+            self.ov_model.save_pretrained(self.model_path)
+        else:
+            self.ov_model = OVModelForSpeechSeq2Seq.from_pretrained(self.model_path, ov_config=self.ov_config, compile=False)
 
     async def transcribe(self, obj_in: UploadFile) -> schemas.Audio:
         """
@@ -130,10 +152,4 @@ class BusinessAudio():
         #         full_transcription=full_transcription
         #     )
     
-
-model = WhisperModel("small", 
-                    compute_type="int8", 
-                    cpu_threads=os.cpu_count(), 
-                    num_workers=os.cpu_count())
-
-audio = BusinessAudio(model)
+audio = BusinessWhisper(settings.DISTIL_WHISPER_SMALL)

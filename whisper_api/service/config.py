@@ -27,5 +27,6 @@ class Settings(BaseSettings):
     DISTIL_WHISPER_SMALL: str = "distil-whisper/distil-small.en"
     DISTIL_WHISPER_MEDIUM: str = "distil-whisper/distil-medium.en"
     DISTIL_WHISPER_LARGE: str = "distil-whisper/distil-large-v2"
+    DEVICE: str = "AUTO"
 
 settings = Settings()

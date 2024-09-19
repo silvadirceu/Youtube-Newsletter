@@ -13,7 +13,7 @@ async def transcribe(
     Transcribe an audio file to a dict. 
     
     """
-    return await business.audio.transcribe(obj_in)
+    return await business.whisper.transcribe(obj_in)
 
 
 # @router.post("/faster")
