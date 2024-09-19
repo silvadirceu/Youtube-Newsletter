@@ -23,5 +23,9 @@ class Settings(BaseSettings):
     CHATGPT_MODEL: str = "gpt-3.5-turbo-1106"
     CHATGPT_TEMPERATURE: float = .2
 
+    # DISTIL WHISPER MODEL
+    DISTIL_WHISPER_SMALL: str = "distil-whisper/distil-small.en"
+    DISTIL_WHISPER_MEDIUM: str = "distil-whisper/distil-medium.en"
+    DISTIL_WHISPER_LARGE: str = "distil-whisper/distil-large-v2"
 
 settings = Settings()
