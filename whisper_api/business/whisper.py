@@ -9,18 +9,14 @@ from optimum.intel.openvino import OVModelForSpeechSeq2Seq
 from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq, pipeline
 from whisper_api.service.config import settings
 import librosa
+import numpy as np
 
 class BusinessWhisper():
     def __init__(self, model_id):
         self.model_id = model_id
-        # Define o caminho para o diretório whisper_api
-        whisper_api_dir = Path(__file__).resolve().parent.parent  # Caminho para whisper_api
-        models_dir = whisper_api_dir / "models"  # Cria o caminho para "models" dentro de whisper_api
-        
-        # Cria o diretório "models" se ele não existir
+        whisper_api_dir = Path(__file__).resolve().parent.parent
+        models_dir = whisper_api_dir / "models"
         models_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Define o caminho completo para o modelo
         self.model_path = models_dir / self.model_id.replace("/", "_")
         self.ov_config = {"CACHE_DIR": ""}
         self.processor = AutoProcessor.from_pretrained(self.model_id)
@@ -70,12 +66,19 @@ class BusinessWhisper():
         """
         Returns all objects.
         """
-        sample = {"audio": {
-            "sampling_rate": settings.SAMPLING_RATING
+        contents = await obj_in.read()
+        with open(obj_in.filename, 'wb') as f:
+            f.write(contents)
+        audio_array, sampling_rate = librosa.load(obj_in.filename, sr=settings.SAMPLING_RATING)
+        sample = {
+            "audio": {
+                "sampling_rate": sampling_rate,
+                "array": np.array(audio_array)
             }
         }
-        sample["audio"]["array"] = librosa.load(obj_in.filename, sr=settings.SAMPLING_RATING)
         result = self.predict(sample)
+        if os.path.exists(obj_in.filename):
+            os.remove(obj_in.filename)
         print("\n\n\n", result, "\n\n\n")
         # contents = await obj_in.read()
         # with open(obj_in.filename, 'wb') as f:
