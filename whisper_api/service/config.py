@@ -28,5 +28,6 @@ class Settings(BaseSettings):
     DISTIL_WHISPER_MEDIUM: str = "distil-whisper/distil-medium.en"
     DISTIL_WHISPER_LARGE: str = "distil-whisper/distil-large-v2"
     DEVICE: str = "AUTO"
+    SAMPLING_RATING: int = 16000
 
 settings = Settings()

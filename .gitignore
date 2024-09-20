@@ -8,6 +8,8 @@
 
 **/videos
 
+**/models
+
 services/openvino/models/distil-whisper
 
 script/distil-whisper_distil-small.en/

@@ -1,1 +1,1 @@
-from .whisper import audio
+from .whisper import whisper
