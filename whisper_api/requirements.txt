@@ -1,0 +1,7 @@
+fastapi
+ffmpeg-python
+pydantic
+uvicorn
+python-multipart
+pydantic-settings
+faster_whisper
