@@ -7,8 +7,8 @@ networks:
 services:
   whisper-api:
     build: 
-      context: .
-      dockerfile: ./Dockerfile
+      context: ./whisper_api
+      dockerfile: whisper.dockerfile
     ports:
       - '8000:80'
     networks:
