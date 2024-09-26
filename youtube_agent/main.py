@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from youtube_manager.api.api_v1.api import api_router
-from youtube_manager.service.config import settings
+from youtube_agent.api.api_v1.api import api_router
+from youtube_agent.service.config import settings
 
 middleware = [
     Middleware(
