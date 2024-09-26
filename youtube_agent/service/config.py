@@ -23,5 +23,9 @@ class Settings(BaseSettings):
     CHATGPT_MODEL: str = "gpt-3.5-turbo-1106"
     CHATGPT_TEMPERATURE: float = .2
 
+    # Redis configs
+    REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+    REDIS_URL = f'redis://:{REDIS_PASSWORD}@localhost:6379/0'
+
 
 settings = Settings()
