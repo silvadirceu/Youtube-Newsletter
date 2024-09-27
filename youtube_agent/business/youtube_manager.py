@@ -2,7 +2,7 @@ from typing import List
 from ...youtube_manager import schemas
 from ...youtube_manager.business import youtube_manager
 
-class ControllerYoutubeManager():
+class BusinessYoutubeManager():
 
     def search(self, name: str) -> schemas.Channel:
         """
@@ -41,4 +41,4 @@ class ControllerYoutubeManager():
         return youtube_manager.download_video(videos)
 
 
-youtube_manager_controller = ControllerYoutubeManager()
+youtube_manager = BusinessYoutubeManager()
