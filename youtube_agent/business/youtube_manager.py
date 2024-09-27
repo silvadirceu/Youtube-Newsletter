@@ -1,5 +1,5 @@
-from youtube_manager import schemas
 from typing import List
+from ...youtube_manager import schemas
 from ...youtube_manager.business import youtube_manager
 
 class ControllerYoutubeManager():
