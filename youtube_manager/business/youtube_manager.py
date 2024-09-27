@@ -107,6 +107,9 @@ class BusinessYoutubeManager():
 
     
     def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
+        """
+        Returns a list of details from each video.
+        """
         if not video_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video IDs provided.")
 
@@ -146,6 +149,9 @@ class BusinessYoutubeManager():
 
     
     async def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+        """
+        Downloads the audios from a video list.
+        """
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
 
@@ -187,6 +193,9 @@ class BusinessYoutubeManager():
 
 
     async def download_video(self, videos: List[schemas.VideoBase]) -> str:
+        """
+        Downloads the videos from a video list.
+        """
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
         
