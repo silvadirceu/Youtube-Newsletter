@@ -19,9 +19,12 @@ class Settings(BaseSettings):
     ROOT_PATH: str = ""
     
     # CHATGPT API
-    # OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
+    OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
     CHATGPT_MODEL: str = "gpt-3.5-turbo-1106"
     CHATGPT_TEMPERATURE: float = .2
+
+    # GROQ API
+    GROQ_API_KEY: str = os.getenv('GROQ_API_KEY')
 
     # Redis configs
     REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
