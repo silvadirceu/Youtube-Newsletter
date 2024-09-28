@@ -2,7 +2,7 @@ from langflow.load import run_flow_from_json
 from youtube_agent.services import config
 
 class BusinessSumary():
-    def summary_video(video_transcription, video_name, channel) ->str:
+    def summary_video(video_transcription, video_name, channel) -> str:
         TWEAKS = {
     "ChatInput-wHJjj": {
         "files": "",
@@ -59,7 +59,7 @@ class BusinessSumary():
     }
     }
 
-        result = run_flow_from_json(flow="Youtube Resumer.json",
+        result = run_flow_from_json(flow="youtube_agent/services/youtuber_summarizer.json",
                                     input_value="message",
                                     fallback_to_env_vars=True, # False by default
                                     tweaks=TWEAKS)
