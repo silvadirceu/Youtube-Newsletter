@@ -15,23 +15,26 @@ class BusinessYoutubeManager():
     def __init__(self, youtube):
         self.youtube = youtube
 
-    def search(self, name: str) -> schemas.Channel:
+    def search(self, names: List[str]) -> schemas.Channel:
         """
         Searches a channel by name and returns a channel_id.
         """
+        channels_ids = []
         try:
-            request = self.youtube.search().list(
-                part="snippet",
-                q=name,
-                type="channel",
-                maxResults=1
-            )
-            response = request.execute()
+            for name in names:
+                request = self.youtube.search().list(
+                    part="snippet",
+                    q=name,
+                    type="channel",
+                    maxResults=1
+                )
+                response = request.execute()
+                channels_ids.append(response['items'][0]['snippet']['channelId'])
 
-            if not response.get('items'):
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found.")
+                if not response.get('items'):
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found.")
             
-            return schemas.Channel(id=response['items'][0]['snippet']['channelId'])
+            return schemas.Channel(ids=channels_ids)
         
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

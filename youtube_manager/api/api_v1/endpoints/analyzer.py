@@ -5,12 +5,12 @@ from typing import Any, List
 router = APIRouter()
 
  
-@router.get("/channels/search", response_model=schemas.Channel)
-def search_channel(name: str):
+@router.post("/channels/search", response_model=schemas.Channel)
+def search_channel(names: List[str]):
     """
     Searches a channel by name and returns a channel_id.
     """
-    return business.youtube_manager.search(name)
+    return business.youtube_manager.search(names)
 
 
 @router.get("/channels/{channel_id}/videos", response_model=List[schemas.Video])
