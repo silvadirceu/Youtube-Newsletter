@@ -1,4 +1,4 @@
 from celery import Celery
-import youtube_agent.services.config as config
+from youtube_agent.services.config import settings
 
-app = Celery("tasks", broker=config.REDIS_URL, backend=config.REDIS_URL)
+app = Celery("tasks", broker=settings.REDIS_URL, backend=settings.REDIS_URL)

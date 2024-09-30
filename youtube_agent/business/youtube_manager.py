@@ -1,6 +1,11 @@
 from typing import List
 from ...youtube_manager import schemas
 from ...youtube_manager.business import youtube_manager
+from youtube_agent.services.config import settings
+import requests
+
+YOUTUBE_MANAGER_HOST = settings.YOUTUBE_MANAGER_HOST
+YOUTUBE_MANAGER_PORT = settings.YOUTUBE_MANAGER_PORT
 
 class BusinessYoutubeManager():
 
@@ -8,14 +13,18 @@ class BusinessYoutubeManager():
         """
         Searches a channel by name and returns a channel_id.
         """
-        return youtube_manager.search(name)
+        json_data = {"name": name}
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/channels/search", json=json_data)
+        return response.json()
 
 
     def get_channel_videos(self, channel_id: str, start_date: str, end_date: str = None) -> List[schemas.Video]:
         """
         Returns a video list from a channel within a specified date range.
         """
-        return youtube_manager.get_channel_videos(channel_id, start_date, end_date)
+        # json_data = {"name": name}
+        # response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/channels/search", json=json_data)
+        # return response.json()
 
 
     
@@ -23,14 +32,18 @@ class BusinessYoutubeManager():
         """
         Returns a list of details from each video.
         """
-        return youtube_manager.get_video_details(video_ids)
+        json_data = {"video_ids": video_ids}
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data)
+        return response.json()
 
     
     async def download_audio(self, videos: List[schemas.VideoBase]) -> str:
         """
         Downloads the audios from a video list.
         """
-        return youtube_manager.download_audio(videos)
+        json_data = {"videos": videos}
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/audios", json=json_data)
+        return response.json()
 
 
 
@@ -38,7 +51,9 @@ class BusinessYoutubeManager():
         """
         Downloads the videos from a video list.
         """
-        return youtube_manager.download_video(videos)
+        json_data = {"videos": videos}
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/videos", json=json_data)
+        return response.json()
 
 
 youtube_manager = BusinessYoutubeManager()
