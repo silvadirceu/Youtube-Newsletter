@@ -1,6 +1,5 @@
 from typing import List
 from ...youtube_manager import schemas
-from ...youtube_manager.business import youtube_manager
 from youtube_agent.services.config import settings
 import requests
 
@@ -9,7 +8,7 @@ YOUTUBE_MANAGER_PORT = settings.YOUTUBE_MANAGER_PORT
 
 class BusinessYoutubeManager():
 
-    def search(self, name: str) -> schemas.Channel:
+    def search(self, name: List[str]) -> schemas.Channel:
         """
         Searches a channel by name and returns a channel_id.
         """

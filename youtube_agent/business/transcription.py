@@ -1,18 +1,19 @@
-from fastapi import UploadFile
-from faster_whisper import WhisperModel
-import ffmpeg
-import os
 from whisper_api import schemas
-from typing import Any
 from ...whisper_api import schemas
-from ...whisper_api.business import whisper
+from youtube_agent.services.config import settings
+import requests
+
+WHISPER_HOST = settings.WHISPER_HOST
+WHISPER_PORT = settings.WHISPER_PORT
 
 class BusinessTranscription():
-    async def transcribe(self, obj_in: UploadFile) -> schemas.Audio:
+    async def transcribe(self, path: str) -> schemas.Audio:
         """
         Transcribe an audio file to a dict.
         """
-        return whisper.transcribe(obj_in)
+        file = {"obj_in": open(path, 'rb')}
+        response = requests.post(f"{WHISPER_HOST}:{WHISPER_PORT}/whisper/transcribe", files=file)
+        return response.json()
     
 
 
