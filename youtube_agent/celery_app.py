@@ -1,11 +1,18 @@
-from celery import shared_task, chord
-from youtube_agent import schemas
-from youtube_agent.business import youtube_manager
+from celery import Celery
+from youtube_agent.services.config import settings
+
+app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
+
+
+# from youtube_agent.celery_app import app
+from celery import chord
+import schemas
+from business import youtube_manager
 from typing import List
 from pydantic import ValidationError
 
 
-@shared_task
+@app.task(name="process_item")
 def process_item(item: str):
     """
     Identifies if the item is a channel name or a video link, and processes accordingly.
@@ -19,7 +26,7 @@ def process_item(item: str):
         # Caso contrário, assume ser um nome de canal
         return handle_channel(item)
 
-@shared_task
+@app.task(name="handle_channel")
 def handle_channel(channel_name: str):
     """
     Processes a channel name by searching for the channel and downloading audio.
@@ -29,7 +36,7 @@ def handle_channel(channel_name: str):
     video_details = youtube_manager.get_video_details([video['id'] for video in videos])
     return youtube_manager.download_audio(video_details)
 
-@shared_task
+@app.task(name="handle_video_link")
 def handle_video_link(video_link: str):
     """
     Processes a video link by directly downloading the audio.
@@ -38,21 +45,15 @@ def handle_video_link(video_link: str):
     video_details = youtube_manager.get_video_details([video_id])
     return youtube_manager.download_audio(video_details)
 
-@shared_task
+@app.task(name="finalize")
 def finalize(results):
     """
     Final task that runs when all tasks are complete.
     """
     return "All tasks completed successfully!"
 
-@shared_task
-def extract_video_id_from_link(link: str) -> str:
-    """
-    Extracts video ID from a YouTube link.
-    """
-    # Extrai o ID do vídeo de um link YouTube
-    return link.split('v=')[1] if 'v=' in link else link.split('/')[-1]
 
+@app.task(name="workflow")
 def workflow(items: List[str]):
     """
     Orchestrates the entire workflow using a chord.
