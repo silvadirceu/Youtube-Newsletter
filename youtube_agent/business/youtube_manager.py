@@ -1,5 +1,5 @@
 from typing import List
-from ...youtube_manager import schemas
+import schemas
 from youtube_agent.services.config import settings
 import requests
 import re
