@@ -21,9 +21,9 @@ class BusinessYoutubeManager():
         """
         Returns a video list from a channel within a specified date range.
         """
-        # json_data = {"name": name}
-        # response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/channels/search", json=json_data)
-        # return response.json()
+        json_data = {"channel_id": channel_id, "start_date": start_date, "end_date": end_date}
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/channels/search", json=json_data)
+        return response.json()
 
 
     
