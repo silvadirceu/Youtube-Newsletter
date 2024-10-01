@@ -1,6 +1,6 @@
 from celery import shared_task, chord
-from ...youtube_manager import schemas
-from business import youtube_manager
+from youtube_agent import schemas
+from youtube_agent.business import youtube_manager
 from typing import List
 from pydantic import ValidationError
 
