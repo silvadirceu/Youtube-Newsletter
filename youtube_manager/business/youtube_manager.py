@@ -194,7 +194,6 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-
     async def download_video(self, videos: List[schemas.VideoBase]) -> str:
         """
         Downloads the videos from a video list.

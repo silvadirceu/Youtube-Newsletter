@@ -2,6 +2,7 @@ from typing import List
 from ...youtube_manager import schemas
 from youtube_agent.services.config import settings
 import requests
+import re
 
 YOUTUBE_MANAGER_HOST = settings.YOUTUBE_MANAGER_HOST
 YOUTUBE_MANAGER_PORT = settings.YOUTUBE_MANAGER_PORT
@@ -53,6 +54,12 @@ class BusinessYoutubeManager():
         json_data = {"videos": videos}
         response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/videos", json=json_data)
         return response.json()
+
+    
+    def extract_youtube_id(self, url: str) -> str:
+        pattern = r'(?:v=|\/(shorts|watch)\/|\/)([0-9A-Za-z_-]{11})'
+        match = re.search(pattern, url)
+        return match.group(1) if match else None
 
 
 youtube_manager = BusinessYoutubeManager()

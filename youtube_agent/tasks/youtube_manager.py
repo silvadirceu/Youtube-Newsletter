@@ -34,7 +34,7 @@ def handle_video_link(video_link: str):
     """
     Processes a video link by directly downloading the audio.
     """
-    video_id = extract_video_id_from_link(video_link)
+    video_id = youtube_manager.extract_youtube_id(video_link)
     video_details = youtube_manager.get_video_details([video_id])
     return youtube_manager.download_audio(video_details)
 
