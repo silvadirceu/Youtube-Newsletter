@@ -1,5 +1,5 @@
 from celery import Celery
-from youtube_agent.services.config import settings
+from services.config import settings
 
 app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
 
@@ -37,13 +37,63 @@ def handle_channel(channel_name: str):
     return youtube_manager.download_audio(video_details)
 
 @app.task(name="handle_video_link")
-def handle_video_link(video_link: str):
+def extract_metadata(video_link: str):
     """
     Processes a video link by directly downloading the audio.
     """
     video_id = youtube_manager.extract_youtube_id(video_link)
     video_details = youtube_manager.get_video_details([video_id])
+    return video_details
+
+
+@app.task(name="handle_video_link")
+def download_audio(video_details: List[schemas.VideoBase]):
+    """
+    Processes a video link by directly downloading the audio.
+    """
     return youtube_manager.download_audio(video_details)
+
+
+workflow_link = Chain(extract_metadata(), download_audio(), transcript(), summary())
+
+workflow_channel = chord(Group([workflow_link for link in channel]), join_summaries())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.task(name="finalize")
 def finalize(results):
@@ -61,3 +111,7 @@ def workflow(items: List[str]):
     task_group = [process_item.s(item) for item in items]
     workflow = chord(task_group)(finalize.s())
     return workflow
+
+
+
+link -> extracao de dados -> transcrição 

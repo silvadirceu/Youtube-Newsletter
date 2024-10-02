@@ -53,6 +53,7 @@ def extract_video_id_from_link(link: str) -> str:
     # Extrai o ID do vídeo de um link YouTube
     return link.split('v=')[1] if 'v=' in link else link.split('/')[-1]
 
+
 def workflow(items: List[str]):
     """
     Orchestrates the entire workflow using a chord.

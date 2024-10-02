@@ -48,8 +48,10 @@ class YouTubeLink(BaseModel):
     url: HttpUrl
 
     @field_validator('url')
-    def validate_youtube_link(cls, v: str, info: FieldValidationInfo):
-        if "youtube.com" not in v and "youtu.be" not in v:
+    def validate_youtube_link(cls, v: HttpUrl, info: FieldValidationInfo):
+        url_str = str(v)  # Converta a URL para string
+        if "youtube.com" not in url_str and "youtu.be" not in url_str:
             raise ValueError('Not a valid YouTube link')
         return v
+
     
