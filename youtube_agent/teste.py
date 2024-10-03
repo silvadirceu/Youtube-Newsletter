@@ -1,5 +1,9 @@
-from celery_app import workflow
+from celery_app import workflow_channel
 
-links = ["https://www.youtube.com/shorts/1Mr-Apxihgs"]
-result = workflow(links)
-print(result)
+channel = {
+    "channel_name": "teste",
+    "channel_id": "123teste",
+    "links": ["a", "b", "c"]
+}
+
+worflow_channel_pipeline = workflow_channel(channel)
