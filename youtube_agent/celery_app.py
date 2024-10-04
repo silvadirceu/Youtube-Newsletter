@@ -91,24 +91,16 @@ def workflow_channel(channel: dict):
         link_chain = link_chain_builder(item)
         group_links.append(link_chain)
 
-    process_link_group = group(*group_links)
-
-    workflow_channel_pipeline = chord(process_link_group)(join_summaries.s())
-    return workflow_channel_pipeline
-
+    return chord(group(*group_links), join_summaries.s())
 
 def workflow_all_channels(channels: List[dict]):
     group_channels = []
-    for channel in channels:
-        channel_workflow = workflow_channel(channel)
-        group_channels.append(channel_workflow)
-    
-    workflow_channels_group = group(*group_channels)
-    # workflow_all_channels_pipeline = chain(chord(workflow_channels_group)(join_channels_summaries.s()),
-    #                                        workflow_all_channels_result.s()) 
 
-    workflow_all_channels_pipeline = chord(workflow_channels_group)(join_channels_summaries.s())
-    return workflow_all_channels_pipeline
+    for channel in channels:
+        group_channels.append(workflow_channel(channel))
+
+    return chord(group(*group_channels), join_channels_summaries.s())
+
 
 
 
