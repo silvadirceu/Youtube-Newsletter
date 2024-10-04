@@ -49,6 +49,25 @@ def join_summaries(results: List[dict]):
     combined_summary = "\n\n".join([item["summary"] for item in results if item.get("summary")])
     return {"combined_summary": combined_summary}
 
+@app.task(name="join_channels_summaries")
+def join_channels_summaries(results: List[dict]):
+    """
+    Join all the summaries from all channels
+    """
+    print("joining channels summaries...")
+    channels_summaries = []
+    for channel in results:
+        channels_summaries.append(channel)
+    return channels_summaries
+
+
+@app.task(name="workflow_all_channels_result")
+def workflow_channels_result(results: dict):
+    """
+    """
+    print("passing workflow all channels result...")
+    return results
+
 
 def link_chain_builder(item: dict):
     workflow_link_chain = chain(
@@ -72,11 +91,25 @@ def workflow_channel(channel: dict):
         link_chain = link_chain_builder(item)
         group_links.append(link_chain)
 
-
     process_link_group = group(*group_links)
 
     workflow_channel_pipeline = chord(process_link_group)(join_summaries.s())
     return workflow_channel_pipeline
+
+
+def workflow_all_channels(channels: List[dict]):
+    group_channels = []
+    for channel in channels:
+        channel_workflow = workflow_channel(channel)
+        group_channels.append(channel_workflow)
+    
+    workflow_channels_group = group(*group_channels)
+    # workflow_all_channels_pipeline = chain(chord(workflow_channels_group)(join_channels_summaries.s()),
+    #                                        workflow_all_channels_result.s()) 
+
+    workflow_all_channels_pipeline = chord(workflow_channels_group)(join_channels_summaries.s())
+    return workflow_all_channels_pipeline
+
 
 
 # workflow_link = Chain(extract_metadata(), download_audio(), transcript(), summary())
