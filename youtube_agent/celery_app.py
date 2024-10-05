@@ -8,12 +8,14 @@ from pydantic import ValidationError
 
 app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
 
-@app.task(name="extract_metadata_link")
-def extract_metadata_link(item: dict):
+@app.task(name="extract_video_metadata")
+def extract_video_metadata(item: dict):
     """
+    Extract a metadata dict from a video id.
     """
-    print("extracting metadata from video link...")
-    item["metadata"] = "metadata"
+    print("extracting metadata from video...")
+    metadata = youtube_manager.get_video_details([schemas.Video(id=item["id"])])
+    item["metadata"] = metadata
     return item
 
 @app.task(name="get_audio")
@@ -21,6 +23,7 @@ def get_audio(item: dict):
     """
     """
     print("downloading audio from link...")
+    audio = youtube_manager.get_video_details([schemas.Video(id=item["id"])])
     item["audio"] = "audio"
     return item
 
@@ -69,29 +72,30 @@ def workflow_channels_result(results: dict):
     return results
 
 
-def link_chain_builder(item: dict):
-    workflow_link_chain = chain(
-        extract_metadata_link.s(item),
+def video_chain_builder(item: dict):
+    workflow_video_chain = chain(
+        extract_video_metadata.s(item),
         get_audio.s(),
         transcribe_audio.s(),
         generate_summary.s()
     )
-    return workflow_link_chain
+    return workflow_video_chain
 
 def workflow_channel(channel: dict):
-    group_links = []
-    for link in channel["links"]:
+    group_videos = []
+    for video in channel["videos"]:
         item = {
-            "link": link,
+            "id": video["id"],
+            "link": video["link"],
             "metadata": None,
             "audio": None,
             "transcription": None,
             "summary": None
         }
-        link_chain = link_chain_builder(item)
-        group_links.append(link_chain)
+        video_chain = video_chain_builder(item)
+        group_videos.append(video_chain)
 
-    return chord(group(*group_links), join_summaries.s())
+    return chord(group(*group_videos), join_summaries.s())
 
 def workflow_all_channels(channels: List[dict]):
     group_channels = []

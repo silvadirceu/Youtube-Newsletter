@@ -32,7 +32,7 @@ class BusinessYoutubeManager():
         """
         Returns a list of details from each video.
         """
-        json_data = {"video_ids": video_ids}
+        json_data = [video.model_dump() for video in video_ids]
         response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data)
         return response.json()
 
