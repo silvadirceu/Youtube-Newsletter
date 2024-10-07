@@ -15,7 +15,7 @@ def extract_video_metadata(item: dict):
     """
     print("extracting metadata from video...")
     metadata = youtube_manager.get_video_details([schemas.Video(id=item["id"])])
-    item["metadata"] = metadata
+    item["metadata"] = metadata[0]
     return item
 
 @app.task(name="get_audio")
@@ -23,8 +23,9 @@ def get_audio(item: dict):
     """
     """
     print("downloading audio from link...")
-    audio = youtube_manager.get_video_details([schemas.Video(id=item["id"])])
-    item["audio"] = "audio"
+    audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
+    item["audio"] = audio
+    print("\n\n\n", item, "\n\n\n")
     return item
 
 @app.task(name="transcribe_audio")
@@ -75,9 +76,9 @@ def workflow_channels_result(results: dict):
 def video_chain_builder(item: dict):
     workflow_video_chain = chain(
         extract_video_metadata.s(item),
-        get_audio.s(),
-        transcribe_audio.s(),
-        generate_summary.s()
+        get_audio.s()#,
+        # transcribe_audio.s(),
+        # generate_summary.s()
     )
     return workflow_video_chain
 

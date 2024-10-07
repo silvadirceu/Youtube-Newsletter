@@ -3,6 +3,7 @@ import schemas
 from services.config import settings
 import requests
 import re
+from pydantic import AnyUrl
 
 YOUTUBE_MANAGER_HOST = settings.YOUTUBE_MANAGER_HOST
 YOUTUBE_MANAGER_PORT = settings.YOUTUBE_MANAGER_PORT
@@ -37,13 +38,22 @@ class BusinessYoutubeManager():
         return response.json()
 
     
-    async def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+    def download_audio(self, videos: List[schemas.VideoBase]) -> str:
         """
         Downloads the audios from a video list.
         """
-        json_data = {"videos": videos}
+        # Converta os campos do tipo Url para strings
+        json_data = []
+        for video in videos:
+            video_data = video.model_dump()
+            # Se o campo de URL existir e for um objeto Url, converte para string
+            video_data['url'] = str(video_data['url'])
+            video_data['thumbnail'] = str(video_data['thumbnail'])
+            json_data.append(video_data)
+        
         response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/audios", json=json_data)
         return response.json()
+
 
 
 
