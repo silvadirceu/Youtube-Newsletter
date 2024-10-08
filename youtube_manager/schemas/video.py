@@ -8,13 +8,13 @@ class VideoBase(BaseModel):
     title: str
     description: Optional[str]
     publishedAt: str
-    thumbnail: HttpUrl
+    thumbnail: str
     channelTitle: str
     duration: str
     viewCount: Optional[int]
     likeCount: Optional[int]
     commentCount: Optional[int]
-    url: HttpUrl
+    url: str
 
 
 # Properties to receive via API on creation
