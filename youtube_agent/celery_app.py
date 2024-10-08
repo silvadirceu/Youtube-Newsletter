@@ -24,8 +24,7 @@ def get_audio(item: dict):
     """
     print("downloading audio from link...")
     audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
-    item["audio"] = audio
-    print("\n\n\n", item, "\n\n\n")
+    item["audio"] = audio[0]["audio_bytes"]
     return item
 
 @app.task(name="transcribe_audio")
