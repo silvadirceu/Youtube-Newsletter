@@ -5,7 +5,7 @@ from typing import Any, List
 router = APIRouter()
 
  
-@router.post("/audios", response_model=str)
+@router.post("/audios", response_model=List[schemas.VideoBase])
 def download_audios(videos: List[schemas.VideoBase]):
     """
     Downloads the audios from a video list.

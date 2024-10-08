@@ -8,8 +8,7 @@ import pandas as pd
 import os
 from pytubefix import YouTube
 from fastapi import HTTPException, status
-import asyncio
-import aiofiles
+import base64
 
 class BusinessYoutubeManager():
     def __init__(self, youtube):
@@ -151,19 +150,17 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-    def download_audio(self, videos: List[schemas.VideoBase]) -> str:
+    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.VideoBase]:
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
         
-        # try:
-        for video in videos:
-            base_dir = f"audios/{video.channelTitle}"
-            os.makedirs(base_dir, exist_ok=True)
-            actual_audios = [i.split(".wa")[0] for i in os.listdir(base_dir)]
-            if video.title not in actual_audios:    
-                yt = YouTube(str(video.url))
+        updated_videos = []
 
+        try:
+            for video in videos:
+                yt = YouTube(str(video.url))
                 stream_url = yt.streams[0].url
+
                 audio, err = (
                     ffmpeg
                     .input(stream_url)
@@ -173,15 +170,19 @@ class BusinessYoutubeManager():
                     .run(capture_stdout=True)
                 )
 
-                with open(f'{base_dir}/{video.title}.wav', 'wb') as f:
-                    f.write(audio)
-                path = f'{base_dir}/{video.title}.wav'
-        return path
+                # Encode audio bytes to base64 string
+                audio_base64 = base64.b64encode(audio).decode('utf-8')
+                video.audio_bytes = audio_base64
+                updated_videos.append(video)
+                
+            return updated_videos
 
-        # except FileNotFoundError as e:
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")
-        # except Exception as e:
-        #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        except FileNotFoundError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
 
 
     def download_video(self, videos: List[schemas.VideoBase]) -> str:
