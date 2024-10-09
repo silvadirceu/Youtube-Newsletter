@@ -20,8 +20,9 @@ channels = [{
 channel = {
     "channel_name": "teste",
     "channel_id": "123teste",
-    "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"},
-               {"id": "1Mr-Apxihgs", "link": "https://www.youtube.com/shorts/1Mr-Apxihgs"}]
+    "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}#,
+            #    {"id": "1Mr-Apxihgs", "link": "https://www.youtube.com/shorts/1Mr-Apxihgs"}
+               ]
 }
 
 workflow_channel_pipeline = workflow_channel(channel)

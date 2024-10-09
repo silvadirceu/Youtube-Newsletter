@@ -3,6 +3,7 @@ from youtube_agent.services.config import settings
 from youtube_agent.services.clients import get_redis
 from youtube_agent import schemas
 from youtube_agent.business import youtube_manager
+from youtube_agent.business import transcriptor
 from typing import List
 
 
@@ -37,8 +38,8 @@ def transcribe_audio(item: dict):
     """
     print("transcribing audio...")
     redis = get_redis()
-    data = redis.get_data(item["audio"])
-    print("\n\n\nredis: ", data, "\n\n\n")
+    audio_data = redis.get_data(item["audio"])
+    audio = transcriptor.transcribe([schemas.VideoBase(**item["metadata"])])
     item["transcription"] = "transcription"
     return item
 
