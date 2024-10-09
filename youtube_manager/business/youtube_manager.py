@@ -150,11 +150,11 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.VideoBase]:
+    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.Audio]:
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
         
-        updated_videos = []
+        audio_data = []
 
         try:
             for video in videos:
@@ -172,10 +172,9 @@ class BusinessYoutubeManager():
 
                 # Encode audio bytes to base64 string
                 audio_base64 = base64.b64encode(audio).decode('utf-8')
-                video.audio_bytes = audio_base64
-                updated_videos.append(video)
+                audio_data.append(schemas.Audio(audio_bytes=audio_base64))
                 
-            return updated_videos
+            return audio_data
 
         except FileNotFoundError as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found: {str(e)}")

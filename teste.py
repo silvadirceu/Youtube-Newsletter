@@ -1,4 +1,4 @@
-from celery_app import workflow_channel, workflow_all_channels
+from youtube_agent.celery_app import workflow_channel, workflow_all_channels
 
 channels = [{
     "channel_name": "teste",

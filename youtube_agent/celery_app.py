@@ -1,9 +1,9 @@
 from celery import Celery, chain, group, chord
-from services.config import settings
-import schemas
-from business import youtube_manager
+from youtube_agent.services.config import settings
+from youtube_agent.services.clients import get_redis
+from youtube_agent import schemas
+from youtube_agent.business import youtube_manager
 from typing import List
-from pydantic import ValidationError
 
 
 app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
@@ -24,7 +24,11 @@ def get_audio(item: dict):
     """
     print("downloading audio from link...")
     audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
-    item["audio"] = audio[0]["audio_bytes"]
+    print("\n\n\n", audio, "\n\n\n")
+    redis = get_redis()
+    key = redis.set_data(audio[0])
+    item["audio"] = key
+    print("\n\n\n", key, "\n\n\n")
     return item
 
 @app.task(name="transcribe_audio")
@@ -32,6 +36,9 @@ def transcribe_audio(item: dict):
     """
     """
     print("transcribing audio...")
+    redis = get_redis()
+    data = redis.get_data(item["audio"])
+    print("\n\n\nredis: ", data, "\n\n\n")
     item["transcription"] = "transcription"
     return item
 
@@ -75,8 +82,8 @@ def workflow_channels_result(results: dict):
 def video_chain_builder(item: dict):
     workflow_video_chain = chain(
         extract_video_metadata.s(item),
-        get_audio.s()#,
-        # transcribe_audio.s(),
+        get_audio.s(),
+        transcribe_audio.s(),
         # generate_summary.s()
     )
     return workflow_video_chain

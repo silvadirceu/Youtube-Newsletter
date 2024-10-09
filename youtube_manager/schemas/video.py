@@ -40,7 +40,8 @@ class VideoInDBBase(VideoBase):
 class Video(BaseModel):
     id: Optional[str] = None
 
-
+class Audio(BaseModel):
+    audio_bytes: str
 
 class VideoInfo(Video):
     pass
