@@ -5,6 +5,7 @@ from youtube_agent import schemas
 from youtube_agent.business import youtube_manager
 from youtube_agent.business import transcriptor
 from typing import List
+import asyncio
 
 
 app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
@@ -25,7 +26,6 @@ def get_audio(item: dict):
     """
     print("downloading audio from link...")
     audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
-    print("\n\n\n", audio, "\n\n\n")
     redis = get_redis()
     key = redis.set_data(audio[0])
     item["audio"] = key
@@ -39,8 +39,11 @@ def transcribe_audio(item: dict):
     print("transcribing audio...")
     redis = get_redis()
     audio_data = redis.get_data(item["audio"])
-    audio = transcriptor.transcribe([schemas.VideoBase(**item["metadata"])])
-    item["transcription"] = "transcription"
+    loop = asyncio.get_event_loop()
+    transcription = loop.run_until_complete(transcriptor.transcribe(schemas.AudioBytes(bytes=audio_data["bytes"])))
+    loop.close()
+    print("\n\n\n", transcription, "\n\n\n")
+    item["transcription"] = transcription
     return item
 
 @app.task(name="generate_summary")

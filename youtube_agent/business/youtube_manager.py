@@ -38,7 +38,7 @@ class BusinessYoutubeManager():
         return response.json()
 
     
-    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.Audio]:
+    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.AudioBytes]:
         """
         Downloads the audios from a video list.
         """
@@ -51,9 +51,9 @@ class BusinessYoutubeManager():
             video_data['thumbnail'] = str(video_data['thumbnail'])
             json_data.append(video_data)
         
-        # response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/audios", json=json_data)
-        response = [{"teste": "teste"}]
-        return response
+        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/downloader/audios", json=json_data)
+        # response = [{"teste": "teste"}]
+        return response.json()
 
     # def download_video(self, videos: List[schemas.VideoBase]) -> str:
     #     """

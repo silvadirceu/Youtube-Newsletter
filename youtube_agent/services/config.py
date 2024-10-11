@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     YOUTUBE_MANAGER_PORT: str = os.getenv('YOUTUBE_MANAGER_PORT')
 
     # Whisper API
-    # WHISPER_HOST: str = os.getenv('WHISPER_HOST')
-    # WHISPER_PORT: str = os.getenv('WHISPER_PORT')
+    WHISPER_HOST: str = os.getenv('WHISPER_HOST')
+    WHISPER_PORT: str = os.getenv('WHISPER_PORT')
 
 settings = Settings()

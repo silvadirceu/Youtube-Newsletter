@@ -150,7 +150,7 @@ class BusinessYoutubeManager():
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.Audio]:
+    def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.AudioBytes]:
         if not videos:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video list provided.")
         
@@ -172,7 +172,7 @@ class BusinessYoutubeManager():
 
                 # Encode audio bytes to base64 string
                 audio_base64 = base64.b64encode(audio).decode('utf-8')
-                audio_data.append(schemas.Audio(audio_bytes=audio_base64))
+                audio_data.append(schemas.AudioBytes(bytes=audio_base64))
                 
             return audio_data
 

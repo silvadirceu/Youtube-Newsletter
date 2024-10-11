@@ -15,7 +15,6 @@ class VideoBase(BaseModel):
     likeCount: Optional[int]
     commentCount: Optional[int]
     url: str
-    audio_bytes: Optional[str] = None
 
 
 # Properties to receive via API on creation
@@ -40,8 +39,8 @@ class VideoInDBBase(VideoBase):
 class Video(BaseModel):
     id: Optional[str] = None
 
-class Audio(BaseModel):
-    audio_bytes: str
+class AudioBytes(BaseModel):
+    bytes: str
 
 class VideoInfo(Video):
     pass
