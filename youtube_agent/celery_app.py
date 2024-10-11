@@ -4,6 +4,7 @@ from youtube_agent.services.clients import get_redis
 from youtube_agent import schemas
 from youtube_agent.business import youtube_manager
 from youtube_agent.business import transcriptor
+from youtube_agent.business import summarizer
 from typing import List
 import asyncio
 
@@ -42,7 +43,7 @@ def transcribe_audio(item: dict):
     loop = asyncio.get_event_loop()
     transcription = loop.run_until_complete(transcriptor.transcribe(schemas.AudioBytes(bytes=audio_data["bytes"])))
     loop.close()
-    print("\n\n\n", transcription, "\n\n\n")
+    redis.delete_data(item["audio"])
     item["transcription"] = transcription
     return item
 
@@ -51,7 +52,9 @@ def generate_summary(item: dict):
     """
     """
     print("generating summary...")
-    item["summary"] = "summary"
+    summary = summarizer.summarize_video(schemas.VideoBase(**item["metadata"]), item["transcription"])
+    print(summary)
+    item["summary"] = summary
     return item
 
 @app.task(name="join_summaries")

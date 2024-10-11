@@ -1,8 +1,9 @@
-from langflow.load import run_flow_from_json
+from langflow import run_flow_from_json
 from youtube_agent.services import config
+from youtube_agent import schemas
 
 class BusinessSumary():
-    def summary_video(video_transcription, video_name, channel) -> str:
+    def summarize_video(video: schemas.VideoBase, video_transcription: str) -> str:
         TWEAKS = {
     "ChatInput-wHJjj": {
         "files": "",
@@ -38,7 +39,7 @@ class BusinessSumary():
         "temperature": 0.1
     },
     "TextInput-lngfO": {
-        "input_value": video_name
+        "input_value": video.title
     },
     "OpenAIModel-Q4AFX": {
         "api_key": config.OPENAPI_KEY,
@@ -55,7 +56,7 @@ class BusinessSumary():
         "temperature": 0.1
     },
     "TextInput-D563R": {
-        "input_value": channel
+        "input_value": video.channelTitle
     }
     }
 
@@ -64,3 +65,6 @@ class BusinessSumary():
                                     fallback_to_env_vars=True, # False by default
                                     tweaks=TWEAKS)
         return result[0].outputs[0].results["message"].data["text"]
+
+
+summarizer = BusinessSumary()
