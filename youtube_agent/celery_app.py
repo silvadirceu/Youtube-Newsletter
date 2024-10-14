@@ -8,7 +8,6 @@ from youtube_agent.business import summarizer
 from typing import List
 import asyncio
 
-
 app = Celery("youtube_newsletter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
 
 @app.task(name="extract_video_metadata")
@@ -29,8 +28,8 @@ def get_audio(item: dict):
     audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
     redis = get_redis()
     key = redis.set_data(audio[0])
+    print("\n\n\nkey: ", key, "\n\n\n")
     item["audio"] = key
-    print("\n\n\n", key, "\n\n\n")
     return item
 
 @app.task(name="transcribe_audio")
@@ -47,13 +46,21 @@ def transcribe_audio(item: dict):
     item["transcription"] = transcription
     return item
 
+def run_async_in_sync(coro):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+
 @app.task(name="generate_summary")
 def generate_summary(item: dict):
     """
     """
     print("generating summary...")
-    summary = summarizer.summarize_video(schemas.VideoBase(**item["metadata"]), item["transcription"])
-    print(summary)
+    summary = run_async_in_sync(summarizer.summarize_video(schemas.VideoBase(**item["metadata"]), item["transcription"]))
+    print("\n\n\n", summary, "\n\n\n")
     item["summary"] = summary
     return item
 
@@ -91,7 +98,7 @@ def video_chain_builder(item: dict):
         extract_video_metadata.s(item),
         get_audio.s(),
         transcribe_audio.s(),
-        # generate_summary.s()
+        generate_summary.s()
     )
     return workflow_video_chain
 

@@ -1,9 +1,9 @@
-from langflow import run_flow_from_json
-from youtube_agent.services import config
+from langflow.load import run_flow_from_json
+from youtube_agent.services.config import settings
 from youtube_agent import schemas
 
 class BusinessSumary():
-    def summarize_video(video: schemas.VideoBase, video_transcription: str) -> str:
+    async def summarize_video(self, video: schemas.VideoBase, video_transcription: str) -> str:
         TWEAKS = {
     "ChatInput-wHJjj": {
         "files": "",
@@ -29,7 +29,7 @@ class BusinessSumary():
     },
     "GroqModel-aj41X": {
         "groq_api_base": "https://api.groq.com",
-        "groq_api_key": config.GROQ_API_KEY,
+        "groq_api_key": settings.GROQ_API_KEY,
         "input_value": "",
         "max_tokens": None,
         "model_name": "llama-3.1-8b-instant",
@@ -42,7 +42,7 @@ class BusinessSumary():
         "input_value": video.title
     },
     "OpenAIModel-Q4AFX": {
-        "api_key": config.OPENAPI_KEY,
+        "api_key": settings.OPENAI_API_KEY,
         "input_value": "",
         "json_mode": False,
         "max_tokens": None,
