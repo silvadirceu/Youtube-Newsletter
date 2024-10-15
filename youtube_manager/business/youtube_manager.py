@@ -14,13 +14,13 @@ class BusinessYoutubeManager():
     def __init__(self, youtube):
         self.youtube = youtube
 
-    def search(self, names: List[str]) -> schemas.Channel:
+    def search(self, channels: schemas.Channels) -> schemas.Channel:
         """
         Searches a channel by name and returns a channel_id.
         """
         channels_ids = []
         try:
-            for name in names:
+            for name in channels.names:
                 request = self.youtube.search().list(
                     part="snippet",
                     q=name,

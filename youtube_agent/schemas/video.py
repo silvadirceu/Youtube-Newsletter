@@ -1,6 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, HttpUrl, FieldValidationInfo, ValidationError, field_validator
-
+from pydantic import BaseModel
 
 # Shared properties
 class VideoBase(BaseModel):
@@ -38,6 +37,7 @@ class VideoInDBBase(VideoBase):
 
 class Video(BaseModel):
     id: Optional[str] = None
+    link: Optional[str] = None
 
 
 class AudioBytes(BaseModel):
@@ -46,15 +46,3 @@ class AudioBytes(BaseModel):
 
 class VideoInfo(Video):
     pass
-
-class YouTubeLink(BaseModel):
-    url: HttpUrl
-
-    @field_validator('url')
-    def validate_youtube_link(cls, v: HttpUrl, info: FieldValidationInfo):
-        url_str = str(v)  # Converta a URL para string
-        if "youtube.com" not in url_str and "youtu.be" not in url_str:
-            raise ValueError('Not a valid YouTube link')
-        return v
-
-    

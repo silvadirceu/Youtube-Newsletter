@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 
-from youtube_manager.api.api_v1.endpoints import analyzer, downloader
+from youtube_agent.api.api_v1.endpoints import workflow
 
 api_router = APIRouter()
-api_router.include_router(analyzer.router, prefix="/analyzer", tags=["Analyzer"])
-api_router.include_router(downloader.router, prefix="/downloader", tags=["Downloader"])
-
+api_router.include_router(workflow.router, prefix="/workflow", tags=["Workflow"])

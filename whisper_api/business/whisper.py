@@ -14,8 +14,6 @@ class BusinessWhisper():
         """
         Transcribe an audio file to a dict.
         """
-        print("trasncribe")
-        print(type(obj_in))
         contents = await obj_in.read()
         with open(obj_in.filename, 'wb') as f:
             f.write(contents)

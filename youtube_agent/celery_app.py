@@ -118,7 +118,7 @@ def workflow_channel(channel: dict):
 
     return chord(group(*group_videos), join_summaries.s())
 
-def workflow_all_channels(channels: List[dict]):
+def workflow_all_channels(channels: schemas.WorkflowCreate):
     group_channels = []
 
     for channel in channels:

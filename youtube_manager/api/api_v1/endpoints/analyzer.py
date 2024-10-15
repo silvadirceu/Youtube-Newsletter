@@ -6,11 +6,11 @@ router = APIRouter()
 
  
 @router.post("/channels/search", response_model=schemas.Channel)
-def search_channel(names: List[str]):
+def search_channel(channels: schemas.Channels):
     """
     Searches a channel by name and returns a channel_id.
     """
-    return business.youtube_manager.search(names)
+    return business.youtube_manager.search(channels)
 
 
 @router.get("/channels/{channel_id}/videos", response_model=List[schemas.Video])

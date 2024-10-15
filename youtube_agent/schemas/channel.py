@@ -1,12 +1,12 @@
-from fastapi import UploadFile, File
 from typing import List, Optional
 from pydantic import BaseModel
-
+from youtube_agent.schemas import Video
 
 # Shared properties
 class ChannelBase(BaseModel):
-    id: Optional[str] = None
-
+    id: str = ""
+    title: str = ""
+    videos: List[Video]
 
 # Properties to receive via API on creation
 class ChannelCreate(ChannelBase):
@@ -30,6 +30,8 @@ class ChannelInDBBase(ChannelBase):
 class Channel(BaseModel):
     id: Optional[str] = None
 
+class Channels(BaseModel):
+    names: List[str]
 
 
 class ChannelInfo(Channel):

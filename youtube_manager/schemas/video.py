@@ -38,6 +38,7 @@ class VideoInDBBase(VideoBase):
 
 class Video(BaseModel):
     id: Optional[str] = None
+    link: Optional[str] = None
 
 class AudioBytes(BaseModel):
     bytes: str
