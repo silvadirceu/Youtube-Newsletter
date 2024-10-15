@@ -1,14 +1,13 @@
-from whisper_api import schemas
 from youtube_agent import schemas
 from youtube_agent.services.config import settings
 from typing import Any, List
 from urllib.parse import urlparse
 from youtube_agent.business import youtube_manager
 from fastapi import HTTPException
-from youtube_agent.celery_app import workflow_all_channels
+from youtube_agent.tasks import workflow_all_channels
 
 class BusinessWorkflow():
-    async def workflow_all_channels(self, workflow: schemas.WorkflowCreate) -> Any:
+    async def all_channels(self, workflow: schemas.WorkflowCreate) -> Any:
         """
         """
         channels = []
@@ -44,7 +43,7 @@ class BusinessWorkflow():
                 raise http_exc
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-        workflow = workflow_all_channels(channels)
+        workflow = workflows.process_channel_workflow(channels)
 
         return channels
 
