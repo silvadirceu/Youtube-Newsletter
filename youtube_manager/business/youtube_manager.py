@@ -9,10 +9,12 @@ import os
 from pytubefix import YouTube
 from fastapi import HTTPException, status
 import base64
+import httpx
 
 class BusinessYoutubeManager():
-    def __init__(self, youtube):
+    def __init__(self, youtube, api_key):
         self.youtube = youtube
+        self.api_key = api_key
 
     def search(self, channels: schemas.Channels) -> schemas.Channel:
         """
@@ -108,44 +110,47 @@ class BusinessYoutubeManager():
 
 
     
-    def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
+    async def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
         """
-        Returns a list of details from each video.
+        Returns a list of details from each video, fetched asynchronously.
         """
         if not video_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No video IDs provided.")
 
         try:
             videos = []
-            for i in range(0, len(video_ids), 50): 
-                video_id_slice = [video.id for video in video_ids[i:i+50] if video.id]
-                request = self.youtube.videos().list(
-                    part="snippet,contentDetails,statistics",
-                    id=",".join(video_id_slice) 
-                )
-                response = request.execute()
+            async with httpx.AsyncClient() as client:
+                for i in range(0, len(video_ids), 50): 
+                    video_id_slice = [video.id for video in video_ids[i:i+50] if video.id]
+                    url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id={','.join(video_id_slice)}&key={self.api_key}"
+                    
+                    response = await client.get(url)
+                    response.raise_for_status()
+                    data = response.json()
 
-                for item in response.get('items', []):
-                    video_data = schemas.VideoBase(
-                        id=item['id'],
-                        title=re.sub(r'[^\w\s]', '', item['snippet']['title']).strip(),
-                        description=item['snippet'].get('description'),
-                        publishedAt=item['snippet']['publishedAt'],
-                        thumbnail=item['snippet']['thumbnails']['default']['url'],
-                        channelTitle=item['snippet']['channelTitle'],
-                        duration=item['contentDetails']['duration'],
-                        viewCount=item['statistics'].get('viewCount'),
-                        likeCount=item['statistics'].get('likeCount'),
-                        commentCount=item['statistics'].get('commentCount'),
-                        url=f"https://www.youtube.com/watch?v={item['id']}"
-                    )
-                    videos.append(video_data)
+                    for item in data.get('items', []):
+                        video_data = schemas.VideoBase(
+                            id=item['id'],
+                            title=re.sub(r'[^\w\s]', '', item['snippet']['title']).strip(),
+                            description=item['snippet'].get('description'),
+                            publishedAt=item['snippet']['publishedAt'],
+                            thumbnail=item['snippet']['thumbnails']['default']['url'],
+                            channelTitle=item['snippet']['channelTitle'],
+                            duration=item['contentDetails']['duration'],
+                            viewCount=item['statistics'].get('viewCount'),
+                            likeCount=item['statistics'].get('likeCount'),
+                            commentCount=item['statistics'].get('commentCount'),
+                            url=f"https://www.youtube.com/watch?v={item['id']}"
+                        )
+                        videos.append(video_data)
                     
             if not videos:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No video details found.")
             
             return videos
 
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error fetching video details: {str(e)}")
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
@@ -296,4 +301,4 @@ class BusinessYoutubeManager():
 
 youtube = build('youtube', 'v3', developerKey=service.settings.YOUTUBE_API_KEY)
 
-youtube_manager = BusinessYoutubeManager(youtube)
+youtube_manager = BusinessYoutubeManager(youtube, service.settings.YOUTUBE_API_KEY)

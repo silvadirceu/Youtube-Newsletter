@@ -1,13 +1,12 @@
 from celery import chain, group, chord
 from typing import List
 import asyncio
-
 from youtube_agent import schemas
 from youtube_agent.business import youtube_manager
 from youtube_agent.business import transcriptor
 from youtube_agent.business import summarizer
 from youtube_agent.services.clients import get_redis
-from youtube_agent.celery_app import app  # Importa a instância do Celery
+from youtube_agent.celery_app import app 
 
 @app.task(name="extract_video_metadata")
 def extract_video_metadata(item: dict):
@@ -84,13 +83,13 @@ def video_chain_builder(item: dict):
     )
     return workflow_video_chain
 
-def workflow_channel(channel: dict):
+def workflow_channel(channel: schemas.ChannelBase):
     """Create a workflow for processing all videos in a channel."""
     group_videos = []
-    for video in channel["videos"]:
+    for video in channel.videos:
         item = {
-            "id": video["id"],
-            "link": video["link"],
+            "id": video.id,
+            "link": video.link,
             "metadata": None,
             "audio": None,
             "transcription": None,
@@ -101,11 +100,11 @@ def workflow_channel(channel: dict):
 
     return chord(group(*group_videos), join_summaries.s())
 
-def workflow_all_channels(workflow: schemas.WorkflowCreate):
+def workflow_all_channels(channels: List[schemas.ChannelBase]):
     """Create a workflow for processing all channels."""
     group_channels = []
 
-    for channel in workflow.channels:
+    for channel in channels:
         group_channels.append(workflow_channel(channel))
 
     return chord(group(*group_channels), join_channels_summaries.s())

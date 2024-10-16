@@ -3,7 +3,7 @@ from youtube_agent import schemas
 from youtube_agent.services.config import settings
 import requests
 import re
-from pydantic import AnyUrl
+import aiohttp
 
 YOUTUBE_MANAGER_HOST = settings.YOUTUBE_MANAGER_HOST
 YOUTUBE_MANAGER_PORT = settings.YOUTUBE_MANAGER_PORT
@@ -35,13 +35,19 @@ class BusinessYoutubeManager():
 
 
     
-    def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
+    async def get_video_details(self, video_ids: List[schemas.Video]) -> List[schemas.VideoBase]:
         """
         Returns a list of details from each video.
         """
         json_data = [video.model_dump() for video in video_ids]
-        response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data)
-        return response.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data) as response:
+                result = await response.json()
+                return result
+               
+        
+        # response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data)
+        # return response.json()
 
     
     def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.AudioBytes]:

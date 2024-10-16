@@ -1,37 +1,88 @@
-from youtube_agent.celery_app import workflow_channel, workflow_all_channels
+from youtube_agent.celery_app import workflow_all_channels
+from youtube_agent import schemas
 
-channels = [{
-    "channel_name": "teste",
-    "channel_id": "123teste",
-    "links": ["a", "b", "c"]
-},
-{
-    "channel_name": "teste2",
-    "channel_id": "123teste2",
-    "links": ["a", "b", "c"]
-},
-{
-    "channel_name": "teste3",
-    "channel_id": "123teste3",
-    "links": ["a", "b", "c"]
-}
+# channels = {
+#     "channel_name": "",
+#     "channel_id": "",
+#     "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}#,
+#             #    {"id": "1Mr-Apxihgs", "link": "https://www.youtube.com/shorts/1Mr-Apxihgs"}
+#                ]
+# }
+
+# channels = [
+#   {
+#     "id": "UCxXL5491Db9U8Rhfs-2LVFg",
+#     "title": "AsimovAcademy",
+#     "videos": [
+#       {
+#         "id": "MtiHwYOZpVw",
+#         "link": None
+#       }
+#     ]
+#   }
+# ]
+
+# channels = [
+#   {
+#     "id": "UCxXL5491Db9U8Rhfs-2LVFg",
+#     "title": "AsimovAcademy",
+#     "videos": [
+#       {
+#         "id": "MtiHwYOZpVw",
+#         "link": None
+#       },
+#       {
+#         "id": "JdbUZ-65zHk",
+#         "link": None
+#       }
+#     ]
+#   }
+# ]
+
+# channels = [
+#   {
+#     "id": "UCxXL5491Db9U8Rhfs-2LVFg",
+#     "title": "AsimovAcademy",
+#     "videos": [
+#       {
+#         "id": "MtiHwYOZpVw",
+#         "link": None
+#       },
+#       {
+#         "id": "JdbUZ-65zHk",
+#         "link": None
+#       }
+#     ]
+#   },
+#   {
+#     "channel_name": "",
+#     "channel_id": "",
+#     "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}]
+#   }
+# ]
+
+channels = [
+  {
+    "channel_name": "",
+    "channel_id": "",
+    "videos": [{"id": "MtiHwYOZpVw", "link": "https://www.youtube.com/shorts/MtiHwYOZpVw"}]
+  },
+  {
+    "channel_name": "",
+    "channel_id": "",
+    "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}]
+  }
 ]
 
-channel = {
-    "channel_name": "teste",
-    "channel_id": "123teste",
-    "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}#,
-            #    {"id": "1Mr-Apxihgs", "link": "https://www.youtube.com/shorts/1Mr-Apxihgs"}
-               ]
-}
-
-workflow_channel_pipeline = workflow_channel(channel)
-print(type(workflow_channel_pipeline))
-workflow_channel_pipeline.apply_async()
+# workflow_channel_pipeline = workflow_channel(channel)
+# print(type(workflow_channel_pipeline))
+# workflow_channel_pipeline.apply_async()
 # print(workflow_channel_pipeline.get())
 
 
-# worflow_all_channels_pipeline = workflow_all_channels(channels)
-# worflow_all_channels_pipeline.apply_async()
-# print(worflow_all_channels_pipeline)
+worflow_all_channels_pipeline = workflow_all_channels([schemas.ChannelBase(**channels[0])])
+result = worflow_all_channels_pipeline.apply_async()
+result = result.get()
+print(type(result))
+print(result)
 # print(type(worflow_all_channels_pipeline))

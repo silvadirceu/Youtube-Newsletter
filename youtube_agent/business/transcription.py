@@ -1,4 +1,3 @@
-from whisper_api import schemas
 from youtube_agent import schemas
 from youtube_agent.services.config import settings
 from fastapi import UploadFile
