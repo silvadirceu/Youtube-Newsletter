@@ -4,7 +4,7 @@ from typing import Any, List
 from urllib.parse import urlparse
 from youtube_agent.business import youtube_manager
 from fastapi import HTTPException
-from youtube_agent.tasks.celery_app import workflow_all_channels
+from youtube_agent.tasks.workflow import workflow_all_channels
 
 class BusinessWorkflow():
     async def all_channels(self, workflow: schemas.WorkflowCreate) -> Any:
