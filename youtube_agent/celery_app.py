@@ -117,9 +117,7 @@ def workflow_channel(channel: schemas.ChannelBase):
 
 def workflow_all_channels(channels: List[schemas.ChannelBase]):
     group_channels = []
-
     for channel in channels:
         group_channels.append(workflow_channel(channel))
 
     return chord(group(*group_channels), join_channels_summaries.s())
-    # return "teste"

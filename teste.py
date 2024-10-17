@@ -39,33 +39,20 @@ from youtube_agent import schemas
 #   }
 # ]
 
-# channels = [
-#   {
-#     "id": "UCxXL5491Db9U8Rhfs-2LVFg",
-#     "title": "AsimovAcademy",
-#     "videos": [
-#       {
-#         "id": "MtiHwYOZpVw",
-#         "link": None
-#       },
-#       {
-#         "id": "JdbUZ-65zHk",
-#         "link": None
-#       }
-#     ]
-#   },
-#   {
-#     "channel_name": "",
-#     "channel_id": "",
-#     "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}]
-#   }
-# ]
-
 channels = [
   {
-    "channel_name": "",
-    "channel_id": "",
-    "videos": [{"id": "MtiHwYOZpVw", "link": "https://www.youtube.com/shorts/MtiHwYOZpVw"}]
+    "id": "UCxXL5491Db9U8Rhfs-2LVFg",
+    "title": "AsimovAcademy",
+    "videos": [
+      {
+        "id": "MtiHwYOZpVw",
+        "link": None
+      },
+      {
+        "id": "JdbUZ-65zHk",
+        "link": None
+      }
+    ]
   },
   {
     "channel_name": "",
@@ -74,13 +61,45 @@ channels = [
   }
 ]
 
+# channels = [
+#   {
+#     "channel_name": "",
+#     "channel_id": "",
+#     "videos": [{"id": "MtiHwYOZpVw", "link": "https://www.youtube.com/shorts/MtiHwYOZpVw"}]
+#   },
+#   {
+#     "channel_name": "",
+#     "channel_id": "",
+#     "videos": [{"id": "V-r-KnmWZT0", "link": "https://www.youtube.com/shorts/V-r-KnmWZT0"}]
+#   }
+# ]
+
+# channels = [
+#   {
+#     "id": "UCxXL5491Db9U8Rhfs-2LVFg",
+#     "title": "AsimovAcademy",
+#     "videos": [
+#       {
+#         "id": "nSKlgF7ilfM",
+#         "link": ""
+#       },
+#       {
+#         "id": "SyALGUlELmc",
+#         "link": None
+#       }
+#     ]
+#   }
+# ]
+
+
+
 # workflow_channel_pipeline = workflow_channel(channel)
 # print(type(workflow_channel_pipeline))
 # workflow_channel_pipeline.apply_async()
 # print(workflow_channel_pipeline.get())
 
 
-worflow_all_channels_pipeline = workflow_all_channels([schemas.ChannelBase(**channels[0])])
+worflow_all_channels_pipeline = workflow_all_channels([schemas.ChannelBase(**channel) for channel in channels])
 result = worflow_all_channels_pipeline.apply_async()
 result = result.get()
 print(type(result))

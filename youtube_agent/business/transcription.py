@@ -26,7 +26,7 @@ class BusinessTranscription():
         )
             
         async with aiohttp.ClientSession() as session:
-            async with session.post(f"{WHISPER_HOST}:{WHISPER_PORT}/whisper/transcribe", data=form_data) as response:
+            async with session.post(f"{WHISPER_HOST}:{WHISPER_PORT}/whisper/transcribe", data=form_data, timeout=aiohttp.ClientTimeout(total=1800)) as response:
                 result = await response.json()
                 return result     
     
