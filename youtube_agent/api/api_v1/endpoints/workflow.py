@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from youtube_agent import schemas, business
+from youtube_agent import schemas, business, workflow_controller
 from typing import Any, List
 
 router = APIRouter()
@@ -9,5 +9,5 @@ router = APIRouter()
 async def all_channels(workflow: schemas.WorkflowCreate):
     """
     """
-    return await business.workflow.all_channels(workflow)
+    return await workflow_controller.workflow.all_channels(workflow)
 

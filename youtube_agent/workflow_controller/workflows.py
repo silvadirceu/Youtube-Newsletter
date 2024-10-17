@@ -4,7 +4,7 @@ from typing import Any, List
 from urllib.parse import urlparse
 from youtube_agent.business import youtube_manager
 from fastapi import HTTPException
-# from youtube_agent.tasks import workflow_all_channels
+from youtube_agent.tasks.celery_app import workflow_all_channels
 
 class BusinessWorkflow():
     async def all_channels(self, workflow: schemas.WorkflowCreate) -> Any:
@@ -43,11 +43,11 @@ class BusinessWorkflow():
                 raise http_exc
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-        # workflow_channels = workflow_all_channels(channels)
-        # result = workflow_channels.apply_async()
-        # print("\n\n\n", type(result), "\n\n\n")
-        # print("\n\n\n", result.get(), "\n\n\n")
-        return channels
+        workflow_channels = workflow_all_channels(channels)
+        tasks = workflow_channels.apply_async()
+        result = tasks.get()
+        return result
+        # return channels
 
 
 

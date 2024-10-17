@@ -45,10 +45,6 @@ class BusinessYoutubeManager():
                 result = await response.json()
                 return result
                
-        
-        # response = requests.post(f"{YOUTUBE_MANAGER_HOST}:{YOUTUBE_MANAGER_PORT}/analyzer/videos", json=json_data)
-        # return response.json()
-
     
     def download_audio(self, videos: List[schemas.VideoBase]) -> List[schemas.AudioBytes]:
         """

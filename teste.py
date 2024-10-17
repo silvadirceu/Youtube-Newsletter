@@ -1,4 +1,4 @@
-from youtube_agent.celery_app import workflow_all_channels
+from youtube_agent.tasks.celery_app import workflow_all_channels
 from youtube_agent import schemas
 
 # channels = {
