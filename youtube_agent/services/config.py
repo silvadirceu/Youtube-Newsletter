@@ -27,8 +27,12 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = os.getenv('GROQ_API_KEY')
 
     # Redis configs
+    REDIS_SERVER: str = os.getenv('REDIS_SERVER')
+    REDIS_PORT: str = os.getenv('REDIS_PORT')
+    REDIS_USER: str = os.getenv('REDIS_USER')
     REDIS_PASSWORD: str = os.getenv('REDIS_PASSWORD')
-    REDIS_URL: str = f'redis://:{REDIS_PASSWORD}@localhost:6379/0'
+    REDIS_DB: str = os.getenv('REDIS_DB')
+    REDIS_URL: str = f"redis://{REDIS_USER}:{REDIS_PASSWORD}@{REDIS_SERVER}:{REDIS_PORT}/{REDIS_DB}"
 
     # Youtube Manager API
     YOUTUBE_MANAGER_HOST: str = os.getenv('YOUTUBE_MANAGER_HOST')

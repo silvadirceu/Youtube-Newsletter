@@ -3,6 +3,5 @@ pydantic
 uvicorn
 python-multipart
 pydantic-settings
-celery
+celery[redis]
 redis
-langflow
