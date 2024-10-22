@@ -14,7 +14,7 @@ class BusinessSumary():
         "store_message": True
     },
     "Prompt-OLGmh": {
-        "template": "You are an AI helping a user in resuming Youtube videos for him, so he will decide if should watch it or not. \nAnswer only in Portuguese and format you message in Markdown format.\nYou will recieve the video name and the \nvideo's transcription and need to answer with a paragraph about it.\n\nUse the following format:\n*Vídeo:* [Video name]\n*Canal:* [Video name]\n*Resumo:* [Explaining what this video is about]\n\n\nVideo name: {video_name}\nVideo name: {channel_name}\nVideo Transcript: {user_input}\n\nAnswer (in Portuguese): ",
+        "template": "You are an AI helping a user in resuming Youtube videos for him, so he will decide if should watch it or not. \nAnswer only in Portuguese and format you message in Markdown format.\nYou will recieve the video name and the \nvideo's transcription and need to answer with a paragraph about it.\n\nUse the following format:\n*Vídeo:* [Video name]\n*Canal:* [Channel name]\n*Resumo:* [Explaining what this video is about]\n\n\nVideo name: {video_name}\nChannel name: {channel_name}\nVideo Transcript: {user_input}\n\nAnswer (in Portuguese): ",
         "user_input": "",
         "video_name": "",
         "channel_name": ""

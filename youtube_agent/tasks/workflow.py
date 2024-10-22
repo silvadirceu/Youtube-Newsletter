@@ -32,10 +32,9 @@ def get_audio(item: dict):
     """
     """
     print("downloading audio from link...")
-    audio = youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])])
+    audio = run_async_in_sync(youtube_manager.download_audio([schemas.VideoBase(**item["metadata"])]))
     redis = get_redis()
     key = redis.set_data(audio[0])
-    print("\n\n\nkey: ", key, "\n\n\n")
     item["audio"] = key
     return item
 
@@ -46,9 +45,6 @@ def transcribe_audio(item: dict):
     print("transcribing audio...")
     redis = get_redis()
     audio_data = redis.get_data(item["audio"])
-    # loop = asyncio.get_event_loop()
-    # transcription = loop.run_until_complete(transcriptor.transcribe(schemas.AudioBytes(bytes=audio_data["bytes"])))
-    # loop.close()
     transcription = run_async_in_sync(transcriptor.transcribe(schemas.AudioBytes(bytes=audio_data["bytes"])))
     redis.delete_data(item["audio"])
     item["transcription"] = transcription
