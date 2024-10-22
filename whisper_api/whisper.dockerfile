@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/whisper_api/requirements.txt
 
 COPY . /code/whisper_api
 
-CMD ["uvicorn", "whisper_api.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "whisper_api.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8002"]

@@ -1,0 +1,7 @@
+numpy==1.23.5
+msgpack
+msgpack_numpy
+redis
+pydantic
+pydantic-settings
+celery[redis]

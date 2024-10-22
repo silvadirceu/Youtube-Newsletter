@@ -1,6 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, HttpUrl
-
+from pydantic import BaseModel
 
 # Shared properties
 class VideoBase(BaseModel):
@@ -40,8 +39,10 @@ class Video(BaseModel):
     id: Optional[str] = None
     link: Optional[str] = None
 
+
 class AudioBytes(BaseModel):
     bytes: str
+
 
 class VideoInfo(Video):
     pass

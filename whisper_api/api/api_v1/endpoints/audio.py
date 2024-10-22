@@ -5,7 +5,7 @@ from typing import Any
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.Audio)
+@router.post("/transcribe", response_model=schemas.Audio)
 async def transcribe(
     obj_in: UploadFile,
 ) -> schemas.Audio:

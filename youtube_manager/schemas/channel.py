@@ -28,8 +28,10 @@ class ChannelInDBBase(ChannelBase):
 
 
 class Channel(BaseModel):
-    id: Optional[str] = None
+    ids: Optional[List[str]] = []
 
+class Channels(BaseModel):
+    names: List[str]
 
 
 class ChannelInfo(Channel):

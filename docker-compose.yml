@@ -3,20 +3,51 @@ networks:
     driver: bridge
 
 services:
+  youtube-manager-api:
+    build: 
+      context: ./youtube_manager
+      dockerfile: youtube_manager.dockerfile
+    ports:
+      - '8001:8001'
+    networks:
+      - youtube-newsletter-network
+
   whisper-api:
     build: 
       context: ./whisper_api
       dockerfile: whisper.dockerfile
     ports:
-      - '8000:80'
+      - '8002:8002'
     networks:
       - youtube-newsletter-network
 
-  youtube-manager-api:
+  youtube-agent-api:
     build: 
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./youtube_agent/youtube_agent.dockerfile
     ports:
-      - '8000:80'
+      - '8003:8003'
+    networks:
+      - youtube-newsletter-network
+
+  celery_worker:
+    build: 
+      context: .
+      dockerfile: ./youtube_agent/youtube_agent.dockerfile
+    command: celery -A youtube_agent.tasks.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+    volumes:
+      - ./youtube_agent:/app/youtube_agent
+    networks:
+      - youtube-newsletter-network
+
+  redis:
+    image: "redis:alpine"
+    command: --port 6380
+    ports:
+      - "6380:6380"
+    expose:
+      - "6380"
     networks:
       - youtube-newsletter-network

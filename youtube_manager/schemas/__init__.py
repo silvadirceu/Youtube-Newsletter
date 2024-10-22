@@ -1,2 +1,2 @@
-from .channel import ChannelBase, Channel
-from .video import VideoBase, Video
+from .channel import ChannelBase, Channel, Channels
+from .video import VideoBase, Video, AudioBytes
